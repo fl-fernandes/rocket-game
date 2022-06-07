@@ -15,7 +15,7 @@ namespace game_t
 {
 	struct hitbox_t
 	{
-		using dimension_t = double; 
+		using dimension_t = float; 
 	
 		dimension_t w;
 		dimension_t h;
@@ -31,7 +31,7 @@ namespace game_t
 
 	struct point_t 
 	{
-		using axis_t = double;
+		using axis_t = float;
 		
 		axis_t x;
 		axis_t y;
@@ -48,16 +48,15 @@ namespace game_t
 	struct color_t
 	{
 		using spectre_t = uint8_t;
-		using alpha_t = float;
 		
 		spectre_t r;
 		spectre_t g;
 		spectre_t b;
-		alpha_t a;
+		spectre_t a;
 		
 		color_t () {}
 		
-		color_t (spectre_t red, spectre_t green, spectre_t blue, alpha_t alpha = ALPHA_MAX_VALUE)
+		color_t (spectre_t red, spectre_t green, spectre_t blue, spectre_t alpha = ALPHA_MAX_VALUE)
 		{
 			this->r = red;
 			this->g = green;
