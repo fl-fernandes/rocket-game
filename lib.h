@@ -2,6 +2,8 @@
 #define __LIB__
 
 #include <cinttypes>
+#include <iostream>
+#include <cstdio>
 
 #define ENVBITSIZE 64 // bit size of operational system
 // check bit size of operational system
@@ -14,6 +16,19 @@
 	#endif
 #endif
 
+#define DEBUG 1
+
+#if DEBUG
+	#define DPRINTF(...) (cprintf(__VA_ARGS__))
+	#define DPRINT(STR) (std::cout << STR)
+	#define DPRINTLN(STR) (std::cout << STR << std::endl)
+#else
+	#define DPRINTF(...)
+	#define DPRINT(STR)
+	#define DPRINTLN(STR)
+#endif
+
+
 #define OO_ENCAPSULATE(TYPE, VAR) \
 	private: \
 		TYPE VAR; \
@@ -25,6 +40,28 @@
 		inline void set_##VAR (TYPE VAR) \
 		{ \
 			this->VAR = VAR; \
+		}
+
+#define OO_ENCAPSULATE_REF(TYPE, VAR) \
+	private: \
+		TYPE VAR; \
+	public: \
+		inline TYPE& get_##VAR () \
+		{ \
+			return this->VAR; \
+		} \
+		inline void set_##VAR (TYPE& VAR) \
+		{ \
+			this->VAR = VAR; \
+		}
+
+#define OO_ENCAPSULATE_REF_RO(TYPE, VAR) \
+	private: \
+		TYPE VAR; \
+	public: \
+		inline TYPE& get_##VAR () \
+		{ \
+			return this->VAR; \
 		}
 
 #define OO_ENCAPSULATE_DV(TYPE, VAR, DEFAULT_VALUE) \
