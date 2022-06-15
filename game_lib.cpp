@@ -4,16 +4,16 @@ namespace game_t
 {
 	using namespace game_t;
 
-	std::function<void(SDL_Event)> handle_event = nullptr;
+	std::function<void(SDL_Event&)> handle_event = nullptr;
 	static uint32_t screen_width;
 	static uint32_t screen_height;
 	static SDL_Window* window;
 	static SDL_Renderer* renderer;
-	static yadsl::vector_t<object_t> objs;
+	static yadsl::vector_t<object_t*> objs(3);
 	static bool initialized = false;
 	static bool running = false;
-
-	object_t::object_t (point_t position, hitbox_t hitbox, color_t color)
+	
+	object_t::object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color) 
 	{
 		this->pos = position;
 		this->hitbox = hitbox;
@@ -21,7 +21,7 @@ namespace game_t
 		this->speed = vector_t(0, 0);
 	}
 
-	yadsl::vector_t<object_t>& objects()
+	yadsl::vector_t<object_t*>& objects()
 	{
 		return objs;
 	}
@@ -81,18 +81,18 @@ namespace game_t
 		SDL_RenderClear(renderer);
 
 		for (uint32_t i = 0; i < objs.size(); i++) {
-			object_t& obj = objs[i];
+			object_t *obj = objs[i];
 			
-			rect.x = obj.get_pos().x;
-			rect.y = obj.get_pos().y;
-			rect.w = obj.get_hitbox().w;
-			rect.h = obj.get_hitbox().h;
+			rect.x = obj->get_pos().x;
+			rect.y = obj->get_pos().y;
+			rect.w = obj->get_hitbox().w;
+			rect.h = obj->get_hitbox().h;
 
 			SDL_SetRenderDrawColor(
 				renderer, 
-				obj.get_color().r, 
-				obj.get_color().g, 
-				obj.get_color().b, 
+				obj->get_color().r, 
+				obj->get_color().g, 
+				obj->get_color().b, 
 				255
 			);
 			
@@ -102,7 +102,7 @@ namespace game_t
 		SDL_RenderPresent(renderer);
 	}
 
-	void run (std::function<void(void)> game_loop)
+	void run (std::function<void(float)> game_loop)
 	{
 		if (!initialized) {
 			std::cerr << "Engine must be initialized! Please, call \"init\" function to initialize" << std::endl;
@@ -111,8 +111,12 @@ namespace game_t
 
 		SDL_Event e;
 		running = true;
+		
+		std::chrono::steady_clock::time_point tbegin, tend;
+		float elapsed = .0f;
 
 		while (running) {
+			tbegin = std::chrono::steady_clock::now();
 			while (SDL_PollEvent(&e) != 0) {
 				if (e.type == SDL_QUIT) {
 					running = false;
@@ -124,7 +128,7 @@ namespace game_t
 			}
 
 			if (game_loop)
-				game_loop();
+				game_loop(elapsed);
 			
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 			SDL_RenderClear(renderer);
@@ -132,6 +136,12 @@ namespace game_t
 			render_objs();
 
 			SDL_RenderPresent(renderer);
+			
+			do {
+				tend = std::chrono::steady_clock::now();
+				std::chrono::duration<float> elapsed_ = std::chrono::duration_cast<std::chrono::duration<float>>(tend - tbegin);
+				elapsed = elapsed_.count();
+			} while (elapsed < 0.001f);
 		}
 		
 		close();

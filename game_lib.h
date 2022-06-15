@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <functional>
 #include <cinttypes>
+#include <chrono>
 #include "vector.h"
 #include "lib.h"
 
@@ -80,14 +81,15 @@ namespace game_t
 
 		public: 
 			object_t () {}
-			object_t (point_t position, hitbox_t hitbox, color_t color);
+			object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color);
 	};
 
-	yadsl::vector_t<object_t>& objects ();
+	extern std::function<void(SDL_Event&)> handle_event;
+	yadsl::vector_t<object_t*>& objects ();
 	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height);
 	void end ();
 	static void render_objs ();
-	void run (std::function<void(void)> game_loop);
+	void run (std::function<void(float)> game_loop);
 }
 
 #endif
