@@ -2,8 +2,10 @@
 #define __GAME_LIB_OBJ__
 
 #include <SDL2/SDL.h>
+#include <functional>
 #include <cinttypes>
 #include "vector.h"
+#include "lib.h"
 
 #define RGB_MAX_VALUE   (255)
 #define RGB_MIN_VALUE   (0)
@@ -13,15 +15,13 @@
 #define WIN_WIDTH  (800)
 #define WIN_HEIGHT (600)
 
-using namespace game_t;
 
 namespace game_t
 {
+	using namespace game_t;
+
 	using coord_t = float;	
 	using spectre_t = uint8_t;
-	using point_t = vector_t;
-	
-	void render_objs (yadsl::vector_t objects);
 	
 	struct hitbox_t
 	{ 
@@ -51,6 +51,8 @@ namespace game_t
 		}
 	};
 
+	using point_t = vector_t;
+
 	struct color_t
 	{	
 		spectre_t r;
@@ -71,121 +73,21 @@ namespace game_t
 	
 	class object_t
 	{	
-		private:
-			point_t pos;
-			color_t color;
-			hitbox_t hitbox;
-			vector_t speed;
-		
-		public:
-			inline point_t::vector_t get_posx ()
-			{
-				return this->pos.x;
-			}
-			
-			inline void set_posx (vector_t x)
-			{	
-				this->pos.x = x;
-			}
-			
-			inline point_t::vector_t get_posy ()
-			{
-				return this->pos.y;
-			}
-			
-			inline void set_posy (vector_t y)
-			{	
-				this->pos.y = y;
-			}
-			
-			inline color_t::spectre_t get_r ()
-			{
-				return this->color.r;
-			}
-			
-			inline void set_r (spectre_t r)
-			{	
-				this->color.r = r;
-			}
-			
-			inline color_t::spectre_t get_g ()
-			{
-				return this->color.g;
-			}
-			
-			inline void set_g (spectre_t g)
-			{	
-				this->color.g = g;
-			}
-			
-			inline color_t::spectre_t get_b ()
-			{
-				return this->color.b;
-			}
-			
-			inline void set_b (spectre_t b)
-			{	
-				this->color.b = b;
-			}
-			
-			inline color_t::spectre_t get_a ()
-			{
-				return this->color.a;
-			}
-			
-			inline void set_r (spectre_t a)
-			{	
-				this->color.a = a;
-			}
-			
-			inline void set_rgb (spectre_t r, spectre_t g, spectre_t b, spectre_t a)
-			{
-				this->color.r = r;
-				this->color.g = g;
-				this->color.b = b;
-				this->color.a = a; 
-			}
-			
-			inline hitbox_t::coord_t get_height ()
-			{
-				return this->hitbox.h;
-			}
-			
-			inline void set_height (coord_t h)
-			{
-				this->hitbox.h = h;
-			}
-			
-			inline hitbox_t::coord_t get_width ()
-			{
-				return this->hitbox.w;
-			}
-			
-			inline void set_width (coord_t w)
-			{
-				this->hitbox.w = w;
-			}
-			
-			inline vector_t::coord_t get_speedx ()
-			{
-				return this->speed.x;
-			}
-			
-			inline vector_t::coord_t set_speedx (vector_t x)
-			{
-				this->speed.x = x;
-			}
-			
-			inline vector_t::coord_t get_speedy ()
-			{
-				return this->speed.y;
-			}
-			
-			inline vector_t::coord_t set_speedy (vector_t y)
-			{
-				this->speed.y = y;
-			}
+		OO_ENCAPSULATE_REF(hitbox_t, hitbox);
+		OO_ENCAPSULATE_REF(point_t, pos);
+		OO_ENCAPSULATE_REF(vector_t, speed);
+		OO_ENCAPSULATE_REF(color_t, color);
+
+		public: 
+			object_t () {}
+			object_t (point_t position, hitbox_t hitbox, color_t color);
 	};
+
+	yadsl::vector_t<object_t>& objects ();
+	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height);
+	void end ();
+	static void render_objs ();
+	void run (std::function<void(void)> game_loop);
 }
 
 #endif
