@@ -13,10 +13,6 @@
 #define ALPHA_MAX_VALUE (1.0f)
 #define ALPHA_MIN_VALUE (0.0f)
 
-#define WIN_WIDTH  (800)
-#define WIN_HEIGHT (600)
-
-
 namespace game_t
 {
 	using namespace game_t;
@@ -74,19 +70,24 @@ namespace game_t
 	
 	class object_t
 	{	
-		OO_ENCAPSULATE_REF(hitbox_t, hitbox);
-		OO_ENCAPSULATE_REF(point_t, pos);
-		OO_ENCAPSULATE_REF(vector_t, speed);
-		OO_ENCAPSULATE_REF(color_t, color);
+		protected:
+			hitbox_t hitbox;
+			point_t pos;
+			vector_t speed;
+			color_t color;
+
+		GETTER_SETTER_REF(hitbox_t, hitbox);
+		GETTER_SETTER_REF(point_t, pos);
+		GETTER_SETTER_REF(vector_t, speed);
+		GETTER_SETTER_REF(color_t, color);
 
 		public: 
 			object_t () {}
 			object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color);
 	};
 
-	extern std::function<void(SDL_Event&)> handle_event;
-	yadsl::vector_t<object_t*>& objects ();
-	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height);
+	extern std::function<void(SDL_Event&, float)> handle_event;
+	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height, yadsl::vector_t<object_t> *objects);
 	void end ();
 	static void render_objs ();
 	void run (std::function<void(float)> game_loop);
