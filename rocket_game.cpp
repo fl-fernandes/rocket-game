@@ -6,12 +6,12 @@ bool rocket_t::check_collision ()
 {
 	for (uint32_t i = 0; i < objects.size(); i++) {
 		object_t* object = objects[i];
-		float y = this->pos.y + this->hitbox.h;
 		
 		if (this == object)
 			continue;
-		else if (this->pos.x <= object->get_pos().x || y >= object->get_pos().y) {
-			this->pos.y = object->get_pos().y - this->hitbox.h;
+		else if (check_object_collision(object))
+		{
+			this->pos.y = (object->get_pos().y - this->hitbox.h) + 1;
 			return true;
 		}
 	}
@@ -48,20 +48,41 @@ mountain_t::mountain_t (const hitbox_t& hitbox)
 	this->set_hitbox(hitbox);
 }
 
-objects_allocator_type objects(3);
+objects_allocator_type objects(20);
 
 rocket_t player(
-	hitbox_t(10, 20),
+	hitbox_t(20, 56.1),
 	point_t(100, 50),
 	color_t(255, 0, 0, 1)
 );
 
 mountain_t mountain(hitbox_t(SCREEN_WIDTH, 100));
 
+void generate_mountains (uint32_t max_width, uint32_t max_height)
+{
+	srand(time(nullptr));
+	float total_width = 0;
+
+	do {
+		coord_t width = rand() % max_width + 20;
+		coord_t height = rand() % max_height + 10;
+
+
+		if ((total_width + width) > SCREEN_WIDTH)
+			width = SCREEN_WIDTH - total_width;
+
+		mountain_t* mountain = new mountain_t(hitbox_t(width, height));
+		mountain->get_pos().x = total_width;
+
+		objects.emplace_back(mountain);
+		total_width += width;
+	} while (total_width < SCREEN_WIDTH);
+}
+
 int main(int argc, char* args[])
 {
 	objects.push(&player);
-	objects.push(&mountain);
+	generate_mountains(150, 100);
 
 	init(
 		"Father Junior ThunderMouth, The Truly And Only",
