@@ -50,7 +50,7 @@
 		{ \
 			return this->VAR; \
 		} \
-		inline void set_##VAR (TYPE& VAR) \
+		inline void set_##VAR (const TYPE& VAR) \
 		{ \
 			this->VAR = VAR; \
 		}
