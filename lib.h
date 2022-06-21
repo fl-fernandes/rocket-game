@@ -28,6 +28,41 @@
 	#define DPRINTLN(STR)
 #endif
 
+#define GETTER(TYPE, VAR) \
+	public: \
+		inline TYPE get_##VAR () \
+			{ \
+				return this->VAR; \
+			} \
+
+#define GETTER_REF(TYPE, VAR) \
+	public: \
+		inline TYPE& get_##VAR () \
+			{ \
+				return this->VAR; \
+			} \
+
+#define SETTER(TYPE, VAR) \
+	public: \
+		inline void set_##VAR (TYPE VAR) \
+		{ \
+			this->VAR = VAR; \
+		}
+
+#define SETTER_REF(TYPE, VAR) \
+	public: \
+		inline void set_##VAR (const TYPE& VAR) \
+		{ \
+			this->VAR = VAR; \
+		}
+
+#define GETTER_SETTER(TYPE, VAR) \
+	GETTER(TYPE, VAR) \
+	SETTER(TYPE, VAR)
+
+#define GETTER_SETTER_REF(TYPE, VAR) \
+	GETTER_REF(TYPE, VAR) \
+	SETTER_REF(TYPE, VAR)
 
 #define OO_ENCAPSULATE(TYPE, VAR) \
 	private: \
