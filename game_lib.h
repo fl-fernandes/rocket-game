@@ -88,8 +88,10 @@ namespace game_t
 			object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color);
 	};
 
+	using objects_allocator_type = yadsl::vector_t<object_t*>;
+
 	extern std::function<void(SDL_Event&, float)> handle_event;
-	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height, yadsl::vector_t<object_t> *objects);
+	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height, objects_allocator_type *objects);
 	void end ();
 	static void render_objs ();
 	void run (std::function<void(float)> game_loop);

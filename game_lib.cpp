@@ -9,7 +9,7 @@ namespace game_t
 	static uint32_t screen_height;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
-	static yadsl::vector_t<object_t> *objs;
+	static yadsl::vector_t<object_t*> *objects;
 	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
@@ -26,7 +26,7 @@ namespace game_t
 		const char* game_name, 
 		uint32_t screen_width, 
 		uint32_t screen_height, 
-		yadsl::vector_t<object_t> *objects
+		objects_allocator_type *objs
 	)
 	{
 		game_t::screen_width = screen_width;
@@ -61,7 +61,7 @@ namespace game_t
 			return;
 		}
 
-		objs = objects;
+		objects = objs;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		initialized = true;
 	}
@@ -83,10 +83,10 @@ namespace game_t
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
-		yadsl::vector_t<object_t>& objects = *objs;
+		objects_allocator_type& objs = *objects;
 
-		for (uint32_t i = 0; i < objects.size(); i++) {
-			object_t& obj = objects[i];
+		for (uint32_t i = 0; i < objs.size(); i++) {
+			object_t& obj = *objs[i];
 			
 			rect.x = obj.get_pos().x;
 			rect.y = obj.get_pos().y;
