@@ -13,6 +13,8 @@
 #define ALPHA_MAX_VALUE (1.0f)
 #define ALPHA_MIN_VALUE (0.0f)
 
+#define EARTH_GRAVITY_ACCLR (9.807f)
+
 namespace game_t
 {
 	using namespace game_t;
@@ -91,6 +93,9 @@ namespace game_t
 	void end ();
 	static void render_objs ();
 	void run (std::function<void(float)> game_loop);
+
+	float calc_free_fall_speed (float gravity_accrl);
+	inline float calc_free_fall_speed (float gravity_accrl, float time);
 }
 
 #endif

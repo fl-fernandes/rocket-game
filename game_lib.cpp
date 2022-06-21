@@ -10,6 +10,7 @@ namespace game_t
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 	static yadsl::vector_t<object_t> *objs;
+	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
 	
@@ -71,6 +72,7 @@ namespace game_t
 		SDL_DestroyWindow(window);
 		window = nullptr;
 		renderer = nullptr;
+		elapsed = .0f;
 		SDL_Quit();
 	}
 
@@ -116,7 +118,6 @@ namespace game_t
 		running = true;
 		
 		std::chrono::steady_clock::time_point tbegin, tend;
-		float elapsed = .0f;
 
 		while (running) {
 			tbegin = std::chrono::steady_clock::now();
@@ -148,6 +149,11 @@ namespace game_t
 		}
 		
 		close();
+	}
+
+	float calc_free_fall_speed (float gravity_accrl)
+	{
+		return (gravity_accrl * gravity_accrl) * elapsed;
 	}
 }
 

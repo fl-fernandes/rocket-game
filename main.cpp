@@ -2,98 +2,67 @@
 #include <iostream>
 #include "game_lib.h"
 
+#define SCREEN_WIDTH (640)
+#define SCREEN_HEIGHT (480)
+
 using namespace game_t;
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+yadsl::vector_t<object_t> objs(3);
 
-class rocket_t : public game_t::object_t 
+class rocket_t : public object_t 
 {
 	public:
-		rocket_t () : game_t::object_t() {}
+		rocket_t () : object_t() {}
+		rocket_t (
+			const hitbox_t& hitbox, 
+			const point_t& position, 
+			const color_t& color
+		) : object_t(hitbox, position, color) {}
 	
-		void handle_event (SDL_Event& e)
+		void handle_event (SDL_Event& e, float time)
 		{
-			if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+			if (e.type == SDL_KEYDOWN) {
 				switch (e.key.keysym.sym) {
 					case SDLK_UP:
-						this->get_speed().y -= 10;
-						break;
-					case SDLK_DOWN:
-						this->get_speed().y += 10;
-						break;
-					case SDLK_LEFT:
-						this->get_speed().x -= 10;
-						break;
-					case SDLK_RIGHT:
-						this->get_speed().x += 10;
-						break;
-					default:
+						this->speed.y -= 1500 * time;
 						break;
 				}
 			}
-			
-			/*
-			else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
-				switch (e.key.keysym.sym) {
-					case SDLK_UP:
-						DPRINTLN(this->get_speed().y);
-						this->get_speed().y += 10;
-						break;
-					case SDLK_DOWN:
-						this->get_speed().y -= 10;
-						break;
-					case SDLK_LEFT:
-						this->get_speed().x += 10;
-						break;
-					case SDLK_RIGHT:
-						this->get_speed().x -= 10;
-						break;
-					default:
-						break;
-				}
-			}*/
 		}
-		
-		void move (float elapsed)
+
+		void physics (float time)
 		{
-			this->get_pos().x += this->get_speed().x * elapsed;
-			
-			if ((this->get_pos().x < 0) || (this->get_pos().x + this->get_hitbox().w > SCREEN_WIDTH)) {
-				this->get_pos().x -= this->get_speed().x * elapsed;
-			}
-			
-			this->get_pos().y += this->get_speed().y * elapsed;
-			
-			if ((this->get_pos().y < 0) || (this->get_pos().y + this->get_hitbox().h > SCREEN_HEIGHT)) {
-				this->get_pos().y -= this->get_speed().y * elapsed;
-			}
+			this->pos.y += this->speed.y * time;
+			this->speed.y += calc_free_fall_speed(EARTH_GRAVITY_ACCLR);
+			DPRINT("Rocket free fall speed: ");
+			DPRINTLN(this->speed.y);
 		}
 };
 
-rocket_t rocket;
+auto rocket_index = objs.emplace_back(
+	hitbox_t(10, 20),
+	point_t(SCREEN_WIDTH / 2, 0),
+	color_t(255, 0, 0, 1)
+);
+
+rocket_t& rocket = static_cast<rocket_t&>(objs.at(rocket_index));
 
 int main(int argc, char* args[])
 {
-	rocket.set_hitbox(game_t::hitbox_t(5, 5));
-	rocket.set_pos(game_t::point_t(SCREEN_WIDTH/2, SCREEN_HEIGHT/2));
-	rocket.set_color(game_t::color_t(255, 0, 0, 1));
-
-	game_t::objects().push(&rocket);
-
-    game_t::init(
+	init(
 		"Father Junior ThunderMouth, The Truly And Only",
 		SCREEN_WIDTH,
-		SCREEN_HEIGHT
+		SCREEN_HEIGHT,
+		&objs
     );
     
-    game_t::handle_event = [&] (SDL_Event& e) {
-    	//std::cout << "tao aqui" << std::endl;
-    	rocket.handle_event(e);
+    handle_event = [&] (SDL_Event& e, float time) {
+    	rocket.handle_event(e, time);
     };
 
-    game_t::run([] (float elapsed) {
-		rocket.move(elapsed);
+   	run([&] (float elapsed) {
+		// rocket.move(elapsed);
+		rocket.physics(elapsed);
     });
 
     return 0;
