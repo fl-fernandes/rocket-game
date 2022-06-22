@@ -1,7 +1,7 @@
 #ifndef __GAME_LIB_OBJ__
 #define __GAME_LIB_OBJ__
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include <functional>
 #include <cinttypes>
 #include <chrono>

@@ -1,7 +1,7 @@
 #ifndef __ROCKET_GAME__
 #define __ROCKET_GAME__
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
