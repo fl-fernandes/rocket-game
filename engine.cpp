@@ -107,6 +107,27 @@ namespace game_t
 		SDL_RenderPresent(renderer);
 	}
 
+	static bool check_collision_on_top (object_t& obj1, object_t& obj2)
+	{
+		if (obj1.get_tlcorner().y == obj2.get_blcorner().y)
+	}
+
+	static void check_collisions ()
+	{
+		objects_allocator_type &objs = *objects;
+
+		for (uint i = 0; i < objs.size() - 1; i++) {
+			object_t& obj_i = *objs[i];
+			for (uint j = i+1; j < objs.size(); j++) {
+				object_t& obj_j = *objs[j];
+
+				// if (obj_i)
+
+				// if (obj.get_area())
+			}
+		}
+	}
+
 	void run (std::function<void(float)> game_loop)
 	{
 		if (!initialized) {
@@ -134,6 +155,8 @@ namespace game_t
 			if (game_loop)
 				game_loop(elapsed);
 			
+			check_collisions();
+
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 			SDL_RenderClear(renderer);
 

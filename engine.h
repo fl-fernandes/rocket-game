@@ -77,6 +77,7 @@ namespace game_t
 			point_t position;
 			vector_t velocity;
 			color_t color;
+			bool has_collided;
 
 		GETTER_SETTER_REF(hitbox_t, hitbox);
 		GETTER_SETTER_REF(point_t, position);
@@ -86,6 +87,34 @@ namespace game_t
 		public: 
 			object_t () {}
 			object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color);
+	
+		public:
+			inline float get_area ()
+			{
+				return this->hitbox.w * this->hitbox.h;
+			}
+			inline point_t get_tlcorner ()
+			{
+				return point_t(this->position.x, this->position.y);
+			}
+			inline point_t get_blcorner ()
+			{
+				return point_t(this->position.x, (this->position.y + this->hitbox.h));
+			}
+			inline point_t get_trcorner ()
+			{
+				return point_t((this->position.x + this->hitbox.w), this->position.y);
+			}
+			inline point_t get_brcorner ()
+			{
+				return point_t(
+					(this->position.x + this->hitbox.w), 
+					(this->position.y + this->hitbox.h)
+				);
+			}
+
+		public:
+			bool handle_collision (object_t object);
 	};
 
 	using objects_allocator_type = yadsl::vector_t<object_t*>;
