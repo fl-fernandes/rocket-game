@@ -1,4 +1,4 @@
-#include "game_lib.h"
+#include "engine.h"
 
 namespace game_t 
 {
@@ -16,10 +16,10 @@ namespace game_t
 	
 	object_t::object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color) 
 	{
-		this->pos = position;
+		this->position = position;
 		this->hitbox = hitbox;
 		this->color = color;
-		this->speed = vector_t(0, 0);
+		this->velocity = vector_t(0, 0);
 	}
 
 	void init (
@@ -88,8 +88,8 @@ namespace game_t
 		for (uint32_t i = 0; i < objs.size(); i++) {
 			object_t& obj = *objs[i];
 			
-			rect.x = obj.get_pos().x;
-			rect.y = obj.get_pos().y;
+			rect.x = obj.get_position().x;
+			rect.y = obj.get_position().y;
 			rect.w = obj.get_hitbox().w;
 			rect.h = obj.get_hitbox().h;
 

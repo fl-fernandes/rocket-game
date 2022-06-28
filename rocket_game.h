@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "game_lib.h"
+#include "engine.h"
 
 #define SCREEN_WIDTH (1366)
 #define SCREEN_HEIGHT (720)
@@ -23,13 +23,13 @@ class rocket_t : public object_t
 		bool check_collision ();
 		inline bool check_lcorner_collision (object_t *object)
 		{
-			return ((this->pos.x) >= (object->get_pos().x) &&
-				(this->pos.x) <= (object->get_pos().x + object->get_hitbox().w));
+			return ((this->position.x) >= (object->get_position().x) &&
+				(this->position.x) <= (object->get_position().x + object->get_hitbox().w));
 		}
 		inline bool check_rcorner_collision (object_t *object)
 		{
-			return ((this->pos.x + this->hitbox.w) >= (object->get_pos().x) &&
-				(this->pos.x + this->hitbox.w) <= (object->get_pos().x + object->get_hitbox().w));
+			return ((this->position.x + this->hitbox.w) >= (object->get_position().x) &&
+				(this->position.x + this->hitbox.w) <= (object->get_position().x + object->get_hitbox().w));
 		}
 		inline bool check_base_collision (object_t *object)
 		{
@@ -37,7 +37,7 @@ class rocket_t : public object_t
 		}
 		inline bool check_object_collision (object_t *object)
 		{
-			return ((this->pos.y + this->hitbox.h) >= object->get_pos().y && 
+			return ((this->position.y + this->hitbox.h) >= object->get_position().y && 
 				this->check_base_collision(object));
 		}
 

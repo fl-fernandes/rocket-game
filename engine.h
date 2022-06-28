@@ -1,5 +1,5 @@
-#ifndef __GAME_LIB_OBJ__
-#define __GAME_LIB_OBJ__
+#ifndef __ENGINE__
+#define __ENGINE__
 
 #include <SDL2/SDL.h>
 #include <functional>
@@ -74,13 +74,13 @@ namespace game_t
 	{	
 		protected:
 			hitbox_t hitbox;
-			point_t pos;
-			vector_t speed;
+			point_t position;
+			vector_t velocity;
 			color_t color;
 
 		GETTER_SETTER_REF(hitbox_t, hitbox);
-		GETTER_SETTER_REF(point_t, pos);
-		GETTER_SETTER_REF(vector_t, speed);
+		GETTER_SETTER_REF(point_t, position);
+		GETTER_SETTER_REF(vector_t, velocity);
 		GETTER_SETTER_REF(color_t, color);
 
 		public: 

@@ -11,7 +11,7 @@ bool rocket_t::check_collision ()
 			continue;
 		else if (check_object_collision(object))
 		{
-			this->pos.y = (object->get_pos().y - this->hitbox.h) + 1;
+			this->position.y = (object->get_position().y - this->hitbox.h) + 1;
 			return true;
 		}
 	}
@@ -24,7 +24,7 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->speed.y -= 1500 * time;
+				this->velocity.y -= 1500 * time;
 				break;
 		}
 	}
@@ -37,13 +37,13 @@ void rocket_t::physics (float time)
 	if (collided) 
 		return;
 
-	this->pos.y += this->speed.y * time;
-	this->speed.y += calc_free_fall_speed(EARTH_GRAVITY_ACCLR);
+	this->position.y += this->velocity.y * time;
+	this->velocity.y += calc_free_fall_speed(EARTH_GRAVITY_ACCLR);
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
 {
-	this->set_pos(point_t(0, SCREEN_HEIGHT - hitbox.h));
+	this->set_position(point_t(0, SCREEN_HEIGHT - hitbox.h));
 	this->set_color(color_t(74, 74, 67));
 	this->set_hitbox(hitbox);
 }
@@ -72,7 +72,7 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 			width = SCREEN_WIDTH - total_width;
 
 		mountain_t* mountain = new mountain_t(hitbox_t(width, height));
-		mountain->get_pos().x = total_width;
+		mountain->get_position().x = total_width;
 
 		objects.emplace_back(mountain);
 		total_width += width;
