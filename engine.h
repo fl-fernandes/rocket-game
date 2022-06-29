@@ -70,6 +70,14 @@ namespace game_t
 		}
 	};
 	
+	enum class collision_direction_t
+	{
+		left,
+		top,
+		right,
+		bottom,
+	};
+	
 	class object_t
 	{	
 		protected:
@@ -77,12 +85,13 @@ namespace game_t
 			point_t position;
 			vector_t velocity;
 			color_t color;
-			bool has_collided;
+			bool collided;
 
 		GETTER_SETTER_REF(hitbox_t, hitbox);
 		GETTER_SETTER_REF(point_t, position);
 		GETTER_SETTER_REF(vector_t, velocity);
 		GETTER_SETTER_REF(color_t, color);
+		GETTER_SETTER_REF(bool, collided);
 
 		public: 
 			object_t () {}
@@ -114,7 +123,7 @@ namespace game_t
 			}
 
 		public:
-			bool handle_collision (object_t object);
+			virtual bool handle_collision (object_t object, collision_direction_t direction);
 	};
 
 	using objects_allocator_type = yadsl::vector_t<object_t*>;

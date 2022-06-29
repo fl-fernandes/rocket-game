@@ -21,6 +21,11 @@ namespace game_t
 		this->color = color;
 		this->velocity = vector_t(0, 0);
 	}
+	
+	bool object_t::handle_collision (object_t object, collision_direction_t direction)
+	{
+		return false;
+	}
 
 	void init (
 		const char* game_name, 
@@ -107,9 +112,32 @@ namespace game_t
 		SDL_RenderPresent(renderer);
 	}
 
-	static bool check_collision_on_top (object_t& obj1, object_t& obj2)
+	inline static bool check_collision_on_left (object_t& obj1, object_t& obj2)
 	{
-		if (obj1.get_tlcorner().y == obj2.get_blcorner().y)
+		return obj1.get_position().x == obj2.get_position().x &&
+			obj1.get_tlcorner().y <= obj2.get_trcorner().y &&
+			obj1.get_blcorner().y >= obj2.get_trcorner().y;
+	}
+	
+	inline static bool check_collision_on_top (object_t& obj1, object_t& obj2)
+	{
+		return obj1.get_position().y == obj2.get_position().y &&
+			obj1.get_tlcorner().x <= obj2.get_blcorner().x &&
+			obj1.get_trcorner().x >= obj2.get_blcorner().x;
+	}
+	
+	inline static bool check_collision_on_right (object_t& obj1, object_t& obj2)
+	{
+		return obj1.get_position().x == obj2.get_position().x &&
+			obj1.get_trcorner().y <= obj2.get_tlcorner().y &&
+			obj1.get_brcorner().y >= obj2.get_tlcorner().y;
+	}
+	
+	inline static bool check_collision_on_bottom (object_t& obj1, object_t& obj2)
+	{
+		return obj1.get_position().y == obj2.get_position().y &&
+			obj1.get_blcorner().x <= obj2.get_tlcorner().x &&
+			obj1.get_brcorner().x >= obj2.get_tlcorner().x;
 	}
 
 	static void check_collisions ()
@@ -120,10 +148,35 @@ namespace game_t
 			object_t& obj_i = *objs[i];
 			for (uint j = i+1; j < objs.size(); j++) {
 				object_t& obj_j = *objs[j];
-
-				// if (obj_i)
-
-				// if (obj.get_area())
+				bool collided = false;
+				collision_direction_t direction_i;
+				collision_direction_t direction_j;
+				
+				if (check_collision_on_left(obj_i, obj_j)) {
+					collided = true;
+					direction_i = collision_direction_t::left;
+					direction_j = collision_direction_t::right;
+				}
+				else if (check_collision_on_top(obj_i, obj_j)) {
+					collided = true;
+					direction_i = collision_direction_t::top;
+					direction_j = collision_direction_t::bottom;
+				}
+				else if (check_collision_on_right(obj_i, obj_j)) {
+					collided = true;
+					direction_i = collision_direction_t::right;
+					direction_j = collision_direction_t::left;
+				}
+				else if (check_collision_on_bottom(obj_i, obj_j)) {
+					collided = true;
+					direction_i = collision_direction_t::right;
+					direction_j = collision_direction_t::left;
+				}
+				
+				if (collided) {
+					obj_i.set_collided(obj_i.handle_collision(obj_j, direction_i));
+					obj_j.set_collided(obj_j.handle_collision(obj_i, direction_j));
+				}
 			}
 		}
 	}
@@ -176,7 +229,7 @@ namespace game_t
 
 	float calc_free_fall_speed (float gravity_accrl)
 	{
-		return (gravity_accrl * gravity_accrl) * elapsed;
+		return gravity_accrl * elapsed;
 	}
 }
 

@@ -52,6 +52,7 @@ class rocket_t : public object_t
 	public:
 		void handle_event (SDL_Event& e, float time);
 		void physics (float time);
+		virtual bool handle_collision (object_t object, collision_direction_t direction) override;
 };
 
 class mountain_t : public object_t 

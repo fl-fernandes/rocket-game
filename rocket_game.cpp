@@ -2,21 +2,10 @@
 
 using namespace game_t;
 
-bool rocket_t::check_collision ()
+bool rocket_t::handle_collision (object_t object, collision_direction_t direction)
 {
-	for (uint32_t i = 0; i < objects.size(); i++) {
-		object_t* object = objects[i];
-		
-		if (this == object)
-			continue;
-		else if (check_object_collision(object))
-		{
-			this->position.y = (object->get_position().y - this->hitbox.h) + 1;
-			return true;
-		}
-	}
-
-	return false;
+	std::cout << "collided" << std::endl;
+	return true;
 }
 
 void rocket_t::handle_event (SDL_Event& e, float time)
@@ -32,8 +21,6 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 
 void rocket_t::physics (float time)
 {
-	if (!collided)
-		collided = this->check_collision();
 	if (collided) 
 		return;
 
