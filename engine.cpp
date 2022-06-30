@@ -236,7 +236,7 @@ namespace game_t
 		return gravity_accrl * elapsed;
 	}
 
-	void uniform_linear_motion (object_t& object, const float velocity, motion_direction_t direction)
+	void urm (object_t& object, const float velocity, motion_direction_t direction)
 	{
 		if (
 			direction == motion_direction_t::up || 
@@ -270,6 +270,43 @@ namespace game_t
 		) {
 			object.get_velocity().x = (velocity * elapsed);
 			object.get_position().x += object.get_velocity().x;
+		}
+	}
+
+	void uvrm (object_t& object, const float acceleration, motion_direction_t direction)
+	{
+		if (
+			direction == motion_direction_t::up ||
+			direction == motion_direction_t::up_left ||
+			direction == motion_direction_t::up_right)
+		{
+			object.get_velocity().y += (acceleration * elapsed);
+			object.get_position().y -= (object.get_velocity().y * elapsed);
+		}
+		else if (
+			direction == motion_direction_t::down ||
+			direction == motion_direction_t::down_left ||
+			direction == motion_direction_t::down_right)
+		{
+			object.get_velocity().y += (acceleration * elapsed);
+			object.get_position().y += (object.get_velocity().y * elapsed);
+		}
+
+		if (
+			direction == motion_direction_t::left ||
+			direction == motion_direction_t::up_left ||
+			direction == motion_direction_t::down_left)
+		{
+			object.get_velocity().x += (acceleration * elapsed);
+			object.get_position().x -= (object.get_velocity().x * elapsed);
+		}
+		else if (
+			direction == motion_direction_t::right ||
+			direction == motion_direction_t::up_right ||
+			direction == motion_direction_t::down_right)
+		{
+			object.get_velocity().x += (acceleration * elapsed);
+			object.get_position().x += (object.get_velocity().x * elapsed);
 		}
 	}
 }

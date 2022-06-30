@@ -10,6 +10,8 @@
 #define SCREEN_WIDTH (1366)
 #define SCREEN_HEIGHT (720)
 
+#define EARTH_GRAVITY (9.807f)
+
 using namespace game_t;
 
 extern objects_allocator_type objects;
@@ -35,7 +37,7 @@ class rocket_t : public object_t
 
 	public:
 		void handle_event (SDL_Event& e, float time);
-		void physics (float time);
+		void physics (float gravity, float time);
 		void handle_collision (object_t& object) override;
 };
 
