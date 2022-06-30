@@ -5,6 +5,7 @@
 #include <functional>
 #include <cinttypes>
 #include <cstring>
+#include <string>
 #include <chrono>
 #include "vector.h"
 #include "lib.h"
@@ -82,6 +83,9 @@ namespace game_t
 	
 	class object_t
 	{	
+		private:
+			SDL_Texture *texture = nullptr;
+
 		protected:
 			hitbox_t hitbox;
 			point_t position;
@@ -92,14 +96,30 @@ namespace game_t
 		GETTER_SETTER_REF(point_t, position);
 		GETTER_SETTER_REF(vector_t, velocity);
 		GETTER_SETTER_REF(color_t, color);
+		OO_ENCAPSULATE(std::string, texture_path);
 
-	public:
-		object_t() {}
-		object_t(const hitbox_t &hitbox, const point_t &position, const color_t &color);
+		public:
+			~object_t();
+			object_t() {}
+			object_t(
+				const hitbox_t &hitbox, 
+				const point_t &position, 
+				const color_t &color
+			);
+			object_t(
+				const hitbox_t &hitbox, 
+				const point_t &position, 
+				const color_t &color, 
+				const char *texture_path
+			);
 
-	public:
-		inline float get_area()
-		{
+		public:
+			inline SDL_Texture* get_texture()
+			{
+				return this->texture;
+			} 
+			inline float get_area()
+			{
 			return this->hitbox.w * this->hitbox.h;
 			}
 			inline point_t get_tlcorner ()
@@ -120,6 +140,7 @@ namespace game_t
 			}
 
 		public:
+			bool load_texture();
 			virtual void handle_collision (object_t& object) {};
 	};
 
