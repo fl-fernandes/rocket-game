@@ -162,6 +162,9 @@ namespace game_t
 	void end ();
 	static void render_objs ();
 	void run (std::function<void(float)> game_loop);
+	void pause ();
+	void unpause ();
+	bool is_paused ();
 
 	// uniform rectilinear motion
 	void urm (object_t& object, const float velocity, motion_direction_t direction);

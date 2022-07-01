@@ -13,6 +13,7 @@ namespace game_t
 	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
+	static bool paused = false;
 
 	object_t::object_t(
 		const hitbox_t &hitbox, 
@@ -53,7 +54,9 @@ namespace game_t
 			SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 			if (texture == nullptr)
 				return false;
-
+			
+			if (this->texture != nullptr)
+				SDL_DestroyTexture(this->texture);
 			SDL_FreeSurface(surface);
 			this->texture = texture;
 			return true;
@@ -186,6 +189,18 @@ namespace game_t
 		}
 	}
 
+	void handle_keydown(SDL_Event &e)
+	{
+		if (e.type == SDL_KEYDOWN) {
+			switch (e.key.keysym.sym) {
+				case SDLK_ESCAPE:
+					if (!is_paused())
+						return pause();
+					return unpause();
+			}
+		}
+	}
+
 	void run (std::function<void(float)> game_loop)
 	{
 		if (!initialized) {
@@ -206,21 +221,25 @@ namespace game_t
 					break;
 				}
 
+				handle_keydown(e);
+
 				if (handle_event != nullptr)
 					handle_event(e, elapsed);
 			}
 
-			if (game_loop)
-				game_loop(elapsed);
-			
-			check_collisions();
+			if (!paused) {
+				if (game_loop)
+					game_loop(elapsed);
+				
+				check_collisions();
 
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-			SDL_RenderClear(renderer);
+				SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+				SDL_RenderClear(renderer);
 
-			render_objs();
+				render_objs();
 
-			SDL_RenderPresent(renderer);
+				SDL_RenderPresent(renderer);
+			}
 
 			do {
 				tend = std::chrono::steady_clock::now();
@@ -230,6 +249,21 @@ namespace game_t
 		}
 		
 		close();
+	}
+
+	void pause () 
+	{
+		paused = true;
+	}
+
+	void unpause () 
+	{
+		paused = false;
+	}
+
+	bool is_paused ()
+	{
+		return paused;
 	}
 
 	void urm (object_t& object, const float velocity, motion_direction_t direction)
