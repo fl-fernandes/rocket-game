@@ -15,8 +15,6 @@
 #define ALPHA_MAX_VALUE (1.0f)
 #define ALPHA_MIN_VALUE (0.0f)
 
-#define EARTH_GRAVITY_ACCLR (50.807f)
-
 namespace game_t
 {
 	using namespace game_t;
@@ -97,6 +95,7 @@ namespace game_t
 		GETTER_SETTER_REF(vector_t, velocity);
 		GETTER_SETTER_REF(color_t, color);
 		OO_ENCAPSULATE(std::string, texture_path);
+		OO_ENCAPSULATE_DV(bool, show_hitbox, true);
 
 		public:
 			~object_t();
@@ -163,9 +162,14 @@ namespace game_t
 	void end ();
 	static void render_objs ();
 	void run (std::function<void(float)> game_loop);
+	void pause ();
+	void unpause ();
+	bool is_paused ();
 
-	float calc_free_fall_speed (float gravity_accrl);
-	void uniform_linear_motion (object_t& object, const float velocity, motion_direction_t direction);
+	// uniform rectilinear motion
+	void urm (object_t& object, const float velocity, motion_direction_t direction);
+	// uniform variable rectilinear motion
+	void uvrm (object_t& object, const float acceleration, motion_direction_t direction);
 }
 
 #endif

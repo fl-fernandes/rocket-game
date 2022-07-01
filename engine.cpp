@@ -13,6 +13,7 @@ namespace game_t
 	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
+	static bool paused = false;
 
 	object_t::object_t(
 		const hitbox_t &hitbox, 
@@ -53,7 +54,9 @@ namespace game_t
 			SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 			if (texture == nullptr)
 				return false;
-
+			
+			if (this->texture != nullptr)
+				SDL_DestroyTexture(this->texture);
 			SDL_FreeSurface(surface);
 			this->texture = texture;
 			return true;
@@ -124,9 +127,6 @@ namespace game_t
 	{
 		SDL_Rect rect;
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderClear(renderer);
-
 		objects_allocator_type& objs = *objects;
 
 		for (uint32_t i = 0; i < objs.size(); i++) {
@@ -137,16 +137,20 @@ namespace game_t
 			rect.w = obj.get_hitbox().w;
 			rect.h = obj.get_hitbox().h;
 
-			SDL_SetRenderDrawColor(
-				renderer, 
-				obj.get_color().r, 
-				obj.get_color().g, 
-				obj.get_color().b, 
-				255
-			);
+
+			if (obj.get_show_hitbox())
+				SDL_SetRenderDrawColor(
+					renderer, 
+					obj.get_color().r, 
+					obj.get_color().g, 
+					obj.get_color().b, 
+					obj.get_color().a
+				);
 			
 			SDL_RenderDrawRect(renderer, &rect);
-			SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
+			
+			if (obj.get_texture() != nullptr)
+				SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
 		}
 	}
 
@@ -185,6 +189,18 @@ namespace game_t
 		}
 	}
 
+	void handle_keydown(SDL_Event &e)
+	{
+		if (e.type == SDL_KEYDOWN) {
+			switch (e.key.keysym.sym) {
+				case SDLK_ESCAPE:
+					if (!is_paused())
+						return pause();
+					return unpause();
+			}
+		}
+	}
+
 	void run (std::function<void(float)> game_loop)
 	{
 		if (!initialized) {
@@ -205,21 +221,25 @@ namespace game_t
 					break;
 				}
 
+				handle_keydown(e);
+
 				if (handle_event != nullptr)
 					handle_event(e, elapsed);
 			}
 
-			if (game_loop)
-				game_loop(elapsed);
-			
-			check_collisions();
+			if (!paused) {
+				if (game_loop)
+					game_loop(elapsed);
+				
+				check_collisions();
 
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-			SDL_RenderClear(renderer);
+				SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+				SDL_RenderClear(renderer);
 
-			render_objs();
+				render_objs();
 
-			SDL_RenderPresent(renderer);
+				SDL_RenderPresent(renderer);
+			}
 
 			do {
 				tend = std::chrono::steady_clock::now();
@@ -231,12 +251,22 @@ namespace game_t
 		close();
 	}
 
-	float calc_free_fall_speed (float gravity_accrl)
+	void pause () 
 	{
-		return gravity_accrl * elapsed;
+		paused = true;
 	}
 
-	void uniform_linear_motion (object_t& object, const float velocity, motion_direction_t direction)
+	void unpause () 
+	{
+		paused = false;
+	}
+
+	bool is_paused ()
+	{
+		return paused;
+	}
+
+	void urm (object_t& object, const float velocity, motion_direction_t direction)
 	{
 		if (
 			direction == motion_direction_t::up || 
@@ -270,6 +300,43 @@ namespace game_t
 		) {
 			object.get_velocity().x = (velocity * elapsed);
 			object.get_position().x += object.get_velocity().x;
+		}
+	}
+
+	void uvrm (object_t& object, const float acceleration, motion_direction_t direction)
+	{
+		if (
+			direction == motion_direction_t::up ||
+			direction == motion_direction_t::up_left ||
+			direction == motion_direction_t::up_right)
+		{
+			object.get_velocity().y += (acceleration * elapsed);
+			object.get_position().y -= (object.get_velocity().y * elapsed);
+		}
+		else if (
+			direction == motion_direction_t::down ||
+			direction == motion_direction_t::down_left ||
+			direction == motion_direction_t::down_right)
+		{
+			object.get_velocity().y += (acceleration * elapsed);
+			object.get_position().y += (object.get_velocity().y * elapsed);
+		}
+
+		if (
+			direction == motion_direction_t::left ||
+			direction == motion_direction_t::up_left ||
+			direction == motion_direction_t::down_left)
+		{
+			object.get_velocity().x += (acceleration * elapsed);
+			object.get_position().x -= (object.get_velocity().x * elapsed);
+		}
+		else if (
+			direction == motion_direction_t::right ||
+			direction == motion_direction_t::up_right ||
+			direction == motion_direction_t::down_right)
+		{
+			object.get_velocity().x += (acceleration * elapsed);
+			object.get_position().x += (object.get_velocity().x * elapsed);
 		}
 	}
 }

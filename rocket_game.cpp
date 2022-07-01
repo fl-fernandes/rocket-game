@@ -19,13 +19,12 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 	}
 }
 
-void rocket_t::physics (float time)
+void rocket_t::physics (float gravity, float time)
 {
 	if (this->collided_to_mountain)
 		return;
 
-	this->position.y += this->velocity.y * time;
-	this->velocity.y += calc_free_fall_speed(EARTH_GRAVITY_ACCLR);
+	uvrm(*this, gravity, motion_direction_t::down);
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
@@ -75,6 +74,9 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 
 int main(int argc, char* args[])
 {
+	float gravity = EARTH_GRAVITY;
+	player.set_show_hitbox(false);
+
 	objects.push(&player);
 	generate_mountains(150, 100);
 
@@ -90,7 +92,7 @@ int main(int argc, char* args[])
     };
 
    	run([&] (float elapsed) {
-		player.physics(elapsed);
+		player.physics(gravity, elapsed);
     });
 
     return 0;
