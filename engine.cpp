@@ -231,11 +231,6 @@ namespace game_t
 		close();
 	}
 
-	float calc_free_fall_speed (float gravity_accrl)
-	{
-		return gravity_accrl * elapsed;
-	}
-
 	void urm (object_t& object, const float velocity, motion_direction_t direction)
 	{
 		if (

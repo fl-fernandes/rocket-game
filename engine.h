@@ -162,7 +162,6 @@ namespace game_t
 	static void render_objs ();
 	void run (std::function<void(float)> game_loop);
 
-	float calc_free_fall_speed (float gravity_accrl);
 	// uniform rectilinear motion
 	void urm (object_t& object, const float velocity, motion_direction_t direction);
 	// uniform variable rectilinear motion
