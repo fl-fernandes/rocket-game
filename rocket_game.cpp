@@ -44,9 +44,10 @@ void mountain_t::handle_collision(object_t& object)
 objects_allocator_type objects(20);
 
 rocket_t player(
-	hitbox_t(20, 56.1),
+	hitbox_t(30, 56.1),
 	point_t(100, 50),
-	color_t("#9649e3")
+	color_t("#9649e3"),
+	"./textures/orbiter.bmp"
 );
 
 mountain_t mountain(hitbox_t(SCREEN_WIDTH, 100));

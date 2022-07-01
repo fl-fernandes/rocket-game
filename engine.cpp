@@ -13,13 +13,53 @@ namespace game_t
 	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
-	
-	object_t::object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color) 
+
+	object_t::object_t(
+		const hitbox_t &hitbox, 
+		const point_t &position, 
+		const color_t &color
+	)
 	{
 		this->position = position;
 		this->hitbox = hitbox;
 		this->color = color;
 		this->velocity = vector_t(0, 0);
+		if (texture_path != "")
+			this->set_texture_path(texture_path);
+	}
+	object_t::object_t(
+		const hitbox_t &hitbox, 
+		const point_t &position, 
+		const color_t &color, 
+		const char *texture_path
+	) : object_t(hitbox, position, color)
+	{
+		this->texture_path = texture_path;
+	}
+
+	object_t::~object_t ()
+	{
+		if (this->texture != nullptr)
+			SDL_DestroyTexture(this->texture);
+	}
+
+	bool object_t::load_texture ()
+	{
+		if (this->texture_path != "" && renderer != nullptr) {
+			SDL_Surface *surface = SDL_LoadBMP(this->texture_path.c_str());
+			if (surface == nullptr)
+				return false;
+
+			SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+			if (texture == nullptr)
+				return false;
+
+			SDL_FreeSurface(surface);
+			this->texture = texture;
+			return true;
+		}
+
+		return false;
 	}
 
 	void init (
@@ -63,6 +103,10 @@ namespace game_t
 
 		objects = objs;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+
+		for (uint32_t i = 0; i < objects->size(); i++)
+			objects->at(i)->load_texture();
+
 		initialized = true;
 	}
 
@@ -80,7 +124,7 @@ namespace game_t
 	{
 		SDL_Rect rect;
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(renderer);
 
 		objects_allocator_type& objs = *objects;
@@ -101,10 +145,9 @@ namespace game_t
 				255
 			);
 			
-			SDL_RenderFillRect(renderer, &rect);
+			SDL_RenderDrawRect(renderer, &rect);
+			SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
 		}
-
-		SDL_RenderPresent(renderer);
 	}
 
 	inline static bool check_collision (object_t& obj1, object_t& obj2)
@@ -170,7 +213,13 @@ namespace game_t
 				game_loop(elapsed);
 			
 			check_collisions();
+
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+			SDL_RenderClear(renderer);
+
 			render_objs();
+
+			SDL_RenderPresent(renderer);
 
 			do {
 				tend = std::chrono::steady_clock::now();

@@ -26,6 +26,12 @@ class rocket_t : public object_t
 			const point_t& position, 
 			const color_t& color
 		) : object_t(hitbox, position, color) {}
+		rocket_t (
+			const hitbox_t& hitbox, 
+			const point_t& position, 
+			const color_t& color,
+			const char *texture_path
+		) : object_t(hitbox, position, color, texture_path) {}
 
 	public:
 		void handle_event (SDL_Event& e, float time);
