@@ -75,6 +75,7 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 int main(int argc, char* args[])
 {
 	float gravity = EARTH_GRAVITY;
+	player.set_show_hitbox(false);
 
 	objects.push(&player);
 	generate_mountains(150, 100);

@@ -124,9 +124,6 @@ namespace game_t
 	{
 		SDL_Rect rect;
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderClear(renderer);
-
 		objects_allocator_type& objs = *objects;
 
 		for (uint32_t i = 0; i < objs.size(); i++) {
@@ -137,16 +134,20 @@ namespace game_t
 			rect.w = obj.get_hitbox().w;
 			rect.h = obj.get_hitbox().h;
 
-			SDL_SetRenderDrawColor(
-				renderer, 
-				obj.get_color().r, 
-				obj.get_color().g, 
-				obj.get_color().b, 
-				255
-			);
+
+			if (obj.get_show_hitbox())
+				SDL_SetRenderDrawColor(
+					renderer, 
+					obj.get_color().r, 
+					obj.get_color().g, 
+					obj.get_color().b, 
+					obj.get_color().a
+				);
 			
 			SDL_RenderDrawRect(renderer, &rect);
-			SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
+			
+			if (obj.get_texture() != nullptr)
+				SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
 		}
 	}
 
