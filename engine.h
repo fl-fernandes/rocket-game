@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <functional>
 #include <cinttypes>
+#include <cstring>
 #include <chrono>
 #include "vector.h"
 #include "lib.h"
@@ -13,14 +14,14 @@
 #define ALPHA_MAX_VALUE (1.0f)
 #define ALPHA_MIN_VALUE (0.0f)
 
-#define EARTH_GRAVITY_ACCLR (9.807f)
+#define EARTH_GRAVITY_ACCLR (50.807f)
 
 namespace game_t
 {
 	using namespace game_t;
 
 	using coord_t = float;	
-	using spectre_t = uint8_t;
+	using spectre_t = uint32_t;
 	
 	struct hitbox_t
 	{ 
@@ -54,6 +55,7 @@ namespace game_t
 
 	struct color_t
 	{	
+		char hex[8];
 		spectre_t r;
 		spectre_t g;
 		spectre_t b;
@@ -66,6 +68,14 @@ namespace game_t
 			this->r = red;
 			this->g = green;
 			this->b = blue;
+			this->a = alpha;
+			std::snprintf(this->hex, sizeof this->hex, "#%02x%02x%02x", red, green, blue);
+		}
+
+		color_t (const char *hex, spectre_t alpha = ALPHA_MAX_VALUE)
+		{
+			strcpy(this->hex, hex);
+			std::sscanf(hex, "#%02x%02x%02x", &this->r, &this->g, &this->b);
 			this->a = alpha;
 		}
 	};
@@ -83,12 +93,49 @@ namespace game_t
 		GETTER_SETTER_REF(vector_t, velocity);
 		GETTER_SETTER_REF(color_t, color);
 
-		public: 
-			object_t () {}
-			object_t (const hitbox_t& hitbox, const point_t& position, const color_t& color);
+	public:
+		object_t() {}
+		object_t(const hitbox_t &hitbox, const point_t &position, const color_t &color);
+
+	public:
+		inline float get_area()
+		{
+			return this->hitbox.w * this->hitbox.h;
+			}
+			inline point_t get_tlcorner ()
+			{
+				return point_t(this->position.x, this->position.y);
+			}
+			inline point_t get_blcorner ()
+			{
+				return point_t(this->position.x, (this->position.y + this->hitbox.h));
+			}
+			inline point_t get_trcorner ()
+			{
+				return point_t((this->position.x + this->hitbox.w), this->position.y);
+			}
+			inline point_t get_brcorner ()
+			{
+				return point_t(this->get_trcorner().x, this->get_blcorner().y);
+			}
+
+		public:
+			virtual void handle_collision (object_t& object) {};
 	};
 
 	using objects_allocator_type = yadsl::vector_t<object_t*>;
+
+	enum class motion_direction_t
+	{
+		up,
+		down,
+		left,
+		right,
+		up_right,
+		up_left,
+		down_right,
+		down_left,
+	};
 
 	extern std::function<void(SDL_Event&, float)> handle_event;
 	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height, objects_allocator_type *objects);
@@ -97,7 +144,7 @@ namespace game_t
 	void run (std::function<void(float)> game_loop);
 
 	float calc_free_fall_speed (float gravity_accrl);
-	inline float calc_free_fall_speed (float gravity_accrl, float time);
+	void uniform_linear_motion (object_t& object, const float velocity, motion_direction_t direction);
 }
 
 #endif

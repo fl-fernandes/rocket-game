@@ -17,29 +17,7 @@ extern objects_allocator_type objects;
 class rocket_t : public object_t 
 {
 	private:
-		bool collided = false;
-
-	private:
-		bool check_collision ();
-		inline bool check_lcorner_collision (object_t *object)
-		{
-			return ((this->position.x) >= (object->get_position().x) &&
-				(this->position.x) <= (object->get_position().x + object->get_hitbox().w));
-		}
-		inline bool check_rcorner_collision (object_t *object)
-		{
-			return ((this->position.x + this->hitbox.w) >= (object->get_position().x) &&
-				(this->position.x + this->hitbox.w) <= (object->get_position().x + object->get_hitbox().w));
-		}
-		inline bool check_base_collision (object_t *object)
-		{
-			return (this->check_lcorner_collision(object) || this->check_rcorner_collision(object));
-		}
-		inline bool check_object_collision (object_t *object)
-		{
-			return ((this->position.y + this->hitbox.h) >= object->get_position().y && 
-				this->check_base_collision(object));
-		}
+		bool collided_to_mountain = false;
 
 	public:
 		rocket_t () : object_t() {}
@@ -52,6 +30,7 @@ class rocket_t : public object_t
 	public:
 		void handle_event (SDL_Event& e, float time);
 		void physics (float time);
+		void handle_collision (object_t& object) override;
 };
 
 class mountain_t : public object_t 
@@ -59,6 +38,9 @@ class mountain_t : public object_t
 	public:
 		mountain_t () {}
 		mountain_t (const hitbox_t& hitbox);
+
+	public:
+		void handle_collision (object_t &object) override;
 };
 
 #endif

@@ -107,6 +107,41 @@ namespace game_t
 		SDL_RenderPresent(renderer);
 	}
 
+	inline static bool check_collision (object_t& obj1, object_t& obj2)
+	{
+		bool xAxis = (((obj1.get_tlcorner().x <= obj2.get_tlcorner().x) &&
+						obj1.get_trcorner().x >= obj2.get_tlcorner().x) ||
+					  ((obj1.get_tlcorner().x <= obj2.get_trcorner().x) &&
+						obj1.get_trcorner().x >= obj2.get_trcorner().x));
+
+		bool yAxis = (((obj1.get_tlcorner().y <= obj2.get_tlcorner().y) &&
+					   obj1.get_blcorner().y >= obj2.get_tlcorner().y) ||
+					  ((obj1.get_tlcorner().y <= obj2.get_blcorner().y) &&
+					   obj1.get_blcorner().y >= obj2.get_blcorner().y));
+
+		return xAxis && yAxis;
+	}
+
+	static void check_collisions ()
+	{
+		objects_allocator_type& objs = *objects;
+
+		for (uint i = 0; i < objs.size() - 1; i++) {
+			object_t& obj_i = *objs[i];
+			for (uint j = 0; j < objs.size(); j++) {
+				object_t& obj_j = *objs[j];
+
+				if (&obj_i == &obj_j)
+					continue;
+
+				if (check_collision(obj_i, obj_j)) {
+					obj_i.handle_collision(obj_j);
+					obj_j.handle_collision(obj_i);
+				}
+			}
+		}
+	}
+
 	void run (std::function<void(float)> game_loop)
 	{
 		if (!initialized) {
@@ -134,12 +169,8 @@ namespace game_t
 			if (game_loop)
 				game_loop(elapsed);
 			
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-			SDL_RenderClear(renderer);
-
+			check_collisions();
 			render_objs();
-
-			SDL_RenderPresent(renderer);
 
 			do {
 				tend = std::chrono::steady_clock::now();
@@ -153,7 +184,44 @@ namespace game_t
 
 	float calc_free_fall_speed (float gravity_accrl)
 	{
-		return (gravity_accrl * gravity_accrl) * elapsed;
+		return gravity_accrl * elapsed;
+	}
+
+	void uniform_linear_motion (object_t& object, const float velocity, motion_direction_t direction)
+	{
+		if (
+			direction == motion_direction_t::up || 
+			direction == motion_direction_t::up_left ||
+			direction == motion_direction_t::up_right
+		) {
+			object.get_velocity().y = (velocity * elapsed);
+			object.get_position().y -= object.get_velocity().y;
+		}
+		else if (
+			direction == motion_direction_t::down ||
+			direction == motion_direction_t::down_left ||
+			direction == motion_direction_t::down_right
+		) {
+			object.get_velocity().y = (velocity * elapsed);
+			object.get_position().y += object.get_velocity().y;
+		}
+
+		if (
+			direction == motion_direction_t::left || 
+			direction == motion_direction_t::up_left ||
+			direction == motion_direction_t::down_left
+		) {
+			object.get_velocity().x = (velocity * elapsed);
+			object.get_position().x -= object.get_velocity().x;
+		}
+		else if (
+			direction == motion_direction_t::right ||
+			direction == motion_direction_t::up_right ||
+			direction == motion_direction_t::down_right
+		) {
+			object.get_velocity().x = (velocity * elapsed);
+			object.get_position().x += object.get_velocity().x;
+		}
 	}
 }
 

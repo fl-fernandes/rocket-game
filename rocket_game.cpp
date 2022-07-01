@@ -2,21 +2,10 @@
 
 using namespace game_t;
 
-bool rocket_t::check_collision ()
+void rocket_t::handle_collision (object_t& object)
 {
-	for (uint32_t i = 0; i < objects.size(); i++) {
-		object_t* object = objects[i];
-		
-		if (this == object)
-			continue;
-		else if (check_object_collision(object))
-		{
-			this->position.y = (object->get_position().y - this->hitbox.h) + 1;
-			return true;
-		}
-	}
-
-	return false;
+	if (typeid(object) == typeid(mountain_t))
+		this->collided_to_mountain = true;
 }
 
 void rocket_t::handle_event (SDL_Event& e, float time)
@@ -32,9 +21,7 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 
 void rocket_t::physics (float time)
 {
-	if (!collided)
-		collided = this->check_collision();
-	if (collided) 
+	if (this->collided_to_mountain)
 		return;
 
 	this->position.y += this->velocity.y * time;
@@ -44,8 +31,14 @@ void rocket_t::physics (float time)
 mountain_t::mountain_t (const hitbox_t& hitbox)
 {
 	this->set_position(point_t(0, SCREEN_HEIGHT - hitbox.h));
-	this->set_color(color_t(74, 74, 67));
+	this->set_color(color_t("#c7a87e"));
 	this->set_hitbox(hitbox);
+}
+
+void mountain_t::handle_collision(object_t& object)
+{
+	if (typeid(object) == typeid(rocket_t))
+		this->set_color(color_t("#f00"));
 }
 
 objects_allocator_type objects(20);
@@ -53,7 +46,7 @@ objects_allocator_type objects(20);
 rocket_t player(
 	hitbox_t(20, 56.1),
 	point_t(100, 50),
-	color_t(255, 0, 0, 1)
+	color_t("#9649e3")
 );
 
 mountain_t mountain(hitbox_t(SCREEN_WIDTH, 100));
