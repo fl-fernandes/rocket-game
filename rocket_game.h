@@ -5,14 +5,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "engine.h"
+#include "engine/engine.h"
 
 #define SCREEN_WIDTH (1366)
 #define SCREEN_HEIGHT (720)
 
 #define EARTH_GRAVITY (9.807f)
 
-using namespace game_t;
+using namespace engine;
 
 extern objects_allocator_type objects;
 

@@ -1,25 +1,19 @@
-#ifndef __ENGINE__
-#define __ENGINE__
+#ifndef __ENGINE_OBJECT__
+#define __ENGINE_OBJECT__
 
 #include <SDL2/SDL.h>
-#include <functional>
-#include <cinttypes>
-#include <cstring>
 #include <string>
-#include <chrono>
-#include "vector.h"
+#include <cstring>
 #include "lib.h"
 
-#define RGB_MAX_VALUE   (255)
-#define RGB_MIN_VALUE   (0)
+#define RGB_MAX_VALUE (255)
+#define RGB_MIN_VALUE (0)
 #define ALPHA_MAX_VALUE (1.0f)
 #define ALPHA_MIN_VALUE (0.0f)
 
-namespace game_t
+namespace engine
 {
-	using namespace game_t;
-
-	using coord_t = float;	
+    using coord_t = float;	
 	using spectre_t = uint32_t;
 	
 	struct hitbox_t
@@ -78,8 +72,8 @@ namespace game_t
 			this->a = alpha;
 		}
 	};
-	
-	class object_t
+
+    class object_t
 	{	
 		private:
 			SDL_Texture *texture = nullptr;
@@ -101,14 +95,14 @@ namespace game_t
 			~object_t();
 			object_t() {}
 			object_t(
-				const hitbox_t &hitbox, 
-				const point_t &position, 
-				const color_t &color
+				const hitbox_t& hitbox, 
+				const point_t& position, 
+				const color_t& color
 			);
 			object_t(
-				const hitbox_t &hitbox, 
-				const point_t &position, 
-				const color_t &color, 
+				const hitbox_t& hitbox, 
+				const point_t& position, 
+				const color_t& color, 
 				const char *texture_path
 			);
 
@@ -139,38 +133,9 @@ namespace game_t
 			}
 
 		public:
-			bool load_texture();
-			virtual void handle_collision (object_t& object) {};
+            virtual void handle_collision (object_t& object) {};
+            bool load_texture (SDL_Renderer *renderer);
 	};
-
-	using objects_allocator_type = yadsl::vector_t<object_t*>;
-
-	enum class motion_direction_t
-	{
-		up,
-		down,
-		left,
-		right,
-		up_right,
-		up_left,
-		down_right,
-		down_left,
-	};
-
-	extern std::function<void(SDL_Event&, float)> handle_event;
-	void init (const char* game_name, uint32_t screen_width, uint32_t screen_height, objects_allocator_type *objects);
-	void end ();
-	static void render_objs ();
-	void run (std::function<void(float)> game_loop);
-	void pause ();
-	void unpause ();
-	bool is_paused ();
-
-	// uniform rectilinear motion
-	void urm (object_t& object, const float velocity, motion_direction_t direction);
-	// uniform variable rectilinear motion
-	void uvrm (object_t& object, const float acceleration, motion_direction_t direction);
 }
 
 #endif
-

@@ -1,6 +1,6 @@
 #include "rocket_game.h"
 
-using namespace game_t;
+using namespace engine;
 
 void rocket_t::handle_collision (object_t& object)
 {
@@ -24,7 +24,7 @@ void rocket_t::physics (float gravity, float time)
 	if (this->collided_to_mountain)
 		return;
 
-	uvrm(*this, gravity, motion_direction_t::down);
+	uniform_variable_rectilinear_motion(*this, gravity, motion_direction_t::down);
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
@@ -72,7 +72,7 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 	} while (total_width < SCREEN_WIDTH);
 }
 
-int main(int argc, char* args[])
+int main(int argc, char **argv)
 {
 	float gravity = EARTH_GRAVITY;
 	player.set_show_hitbox(false);
