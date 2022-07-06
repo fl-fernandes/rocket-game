@@ -22,7 +22,8 @@ namespace engine
 	void init (const char *game_name, uint32_t screen_width, uint32_t screen_height, objects_allocator_type *objects);
 	void end ();
 	void run (std::function<void(float)> game_loop);
-
+	
+	bool load_background (const char *path);
 	void pause ();
 	void unpause ();
 	bool is_paused ();
