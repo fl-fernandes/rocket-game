@@ -12,6 +12,7 @@ namespace engine
 	static bool initialized = false;
 	static bool running = false;
 	static bool paused = false;
+	static SDL_Texture *background_texture;
 
     SDL_Renderer* get_renderer ()
     {
@@ -37,6 +38,27 @@ namespace engine
 	{
 		return paused;
 	}
+	
+	bool load_background (const char *path)
+	{
+		if (renderer != nullptr) {
+			SDL_Surface *surface = SDL_LoadBMP(path);
+			if (surface == nullptr)
+				return false;
+
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+            if (texture == nullptr)
+				return false;
+			
+			if (background_texture != nullptr)
+				SDL_DestroyTexture(background_texture);
+			SDL_FreeSurface(surface);
+			background_texture = texture;
+			return true;
+		}
+
+		return false;
+	};
 
     static void render_objs ()
 	{
@@ -205,12 +227,21 @@ namespace engine
 					game_loop(elapsed);
 				
 				check_collisions();
-
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+				
+				if (background_texture != nullptr)
+					SDL_RenderCopy(renderer, background_texture, NULL, NULL);
+				else
+					SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+					
 				SDL_RenderClear(renderer);
-
+					
+				if (background_texture != nullptr)
+					SDL_RenderCopy(renderer, background_texture, NULL, NULL);
+				else
+					SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+				
 				render_objs();
-
+				
 				SDL_RenderPresent(renderer);
 			}
 

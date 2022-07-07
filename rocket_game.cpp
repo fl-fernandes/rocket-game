@@ -74,7 +74,7 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 
 int main(int argc, char **argv)
 {
-	float gravity = EARTH_GRAVITY;
+	float gravity = 50.0f;
 	player.set_show_hitbox(false);
 
 	objects.push(&player);
@@ -86,6 +86,8 @@ int main(int argc, char **argv)
 		SCREEN_HEIGHT,
 		&objects
     );
+    
+    load_background("./textures/sky1.bmp");
     
     handle_event = [&] (SDL_Event& e, float time) {
     	player.handle_event(e, time);
