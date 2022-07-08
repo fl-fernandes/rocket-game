@@ -20,6 +20,8 @@ class rocket_t : public object_t
 {
 	private:
 		bool collided_to_mountain = false;
+		
+	OO_ENCAPSULATE_DV(bool, destroyed, false);
 
 	public:
 		rocket_t () : object_t() {}

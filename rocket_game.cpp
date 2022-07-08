@@ -2,10 +2,36 @@
 
 using namespace engine;
 
+void destroy_orbiter (rocket_t& rocket)
+{
+	rocket.set_render(false);
+	rocket.set_destroyed(true);
+
+	hitbox_t explosion_hitbox = hitbox_t(60.0f, 40.0f);
+	point_t explosion_position(
+		rocket.get_position().x - (rocket.get_hitbox().w / 2),
+		rocket.get_blcorner().y - explosion_hitbox.h
+	);
+	object_t* explosion = new object_t(
+		explosion_hitbox,
+		explosion_position,
+		color_t("#9649e3"),
+		"./textures/explosion.bmp"
+	);
+
+	objects.emplace_back(explosion);
+	explosion->load_texture(get_renderer());
+	
+	play_sound("./audios/explosion-se.wav");
+}
+
 void rocket_t::handle_collision (object_t& object)
 {
-	if (typeid(object) == typeid(mountain_t))
+	if (typeid(object) == typeid(mountain_t) && !this->destroyed) {
 		this->collided_to_mountain = true;
+		if (this->velocity.y > 30.0f)
+			destroy_orbiter(*this);
+	}
 }
 
 void rocket_t::handle_event (SDL_Event& e, float time)
@@ -13,7 +39,7 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->velocity.y -= 1500 * time;
+				this->velocity.y -= 1000 * time;
 				break;
 		}
 	}
@@ -24,6 +50,7 @@ void rocket_t::physics (float gravity, float time)
 	if (this->collided_to_mountain)
 		return;
 
+	uniform_rectilinear_motion(*this, gravity*3, motion_direction_t::right);
 	uniform_variable_rectilinear_motion(*this, gravity, motion_direction_t::down);
 }
 
@@ -88,8 +115,9 @@ int main(int argc, char **argv)
     );
     
     load_background("./textures/sky1.bmp");
-    
-    handle_event = [&] (SDL_Event& e, float time) {
+	load_music_theme("./audios/main-theme-mu.wav");
+
+	handle_event = [&] (SDL_Event& e, float time) {
     	player.handle_event(e, time);
     };
 
