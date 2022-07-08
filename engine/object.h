@@ -90,6 +90,7 @@ namespace engine
 		GETTER_SETTER_REF(color_t, color);
 		OO_ENCAPSULATE(std::string, texture_path);
 		OO_ENCAPSULATE_DV(bool, show_hitbox, true);
+		OO_ENCAPSULATE_DV(bool, render, true);
 
 		public:
 			~object_t();

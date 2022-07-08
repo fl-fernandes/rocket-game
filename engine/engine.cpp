@@ -60,6 +60,18 @@ namespace engine
 		return false;
 	};
 
+	bool play_sound (const char* sound_path)
+	{
+		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+		// Mix_Music *music = Mix_LoadMUS(sound_path);
+		Mix_Chunk *sound = Mix_LoadWAV(sound_path);
+		if (sound == nullptr)
+			return false;
+
+		Mix_PlayChannel(-1, sound, 0);
+		return true;
+	}
+
     static void render_objs ()
 	{
 		SDL_Rect rect;
@@ -68,7 +80,10 @@ namespace engine
 
 		for (uint32_t i = 0; i < objs.size(); i++) {
 			object_t& obj = *objs[i];
-			
+
+			if (!obj.get_render())
+				continue;
+
 			rect.x = obj.get_position().x;
 			rect.y = obj.get_position().y;
 			rect.w = obj.get_hitbox().w;
@@ -148,9 +163,15 @@ namespace engine
 		engine::screen_width = screen_width;
 		engine::screen_height = screen_height;
 		
-		if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
 			DPRINT("SDL cout not be initialize! SDL_Error: ");
 			DPRINTLN(SDL_GetError());
+			return;
+		}
+
+		if (Mix_Init(0) < 0) {
+			DPRINT("SDL_Mixer cout not be initialize! SDL_Error: ");
+			DPRINTLN(Mix_GetError());
 			return;
 		}
 

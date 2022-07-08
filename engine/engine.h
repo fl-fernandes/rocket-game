@@ -2,6 +2,7 @@
 #define __ENGINE__
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <functional>
 #include <cinttypes>
 #include <cstring>
@@ -23,12 +24,14 @@ namespace engine
 	void end ();
 	void run (std::function<void(float)> game_loop);
 	
+    SDL_Renderer* get_renderer ();
+    float get_elapsed ();
+
 	bool load_background (const char *path);
 	void pause ();
 	void unpause ();
 	bool is_paused ();
-    SDL_Renderer* get_renderer ();
-    float get_elapsed ();
+	bool play_sound (const char* sound_path);
 }
 
 #endif
