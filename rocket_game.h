@@ -23,7 +23,7 @@ enum class explosion_direction_t
 	bottom,
 };
 
-class rocket_t : public object_t 
+class orbiter_t : public object_t 
 {
 	private:
 		bool collided = false;
@@ -31,13 +31,13 @@ class rocket_t : public object_t
 	OO_ENCAPSULATE_DV(bool, destroyed, false);
 
 	public:
-		rocket_t () : object_t() {}
-		rocket_t (
+		orbiter_t () : object_t() {}
+		orbiter_t (
 			const hitbox_t& hitbox, 
 			const point_t& position, 
 			const color_t& color
 		) : object_t(hitbox, position, color) {}
-		rocket_t (
+		orbiter_t (
 			const hitbox_t& hitbox, 
 			const point_t& position, 
 			const color_t& color,

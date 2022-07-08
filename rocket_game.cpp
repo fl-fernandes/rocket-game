@@ -3,16 +3,16 @@
 using namespace engine;
 
 void destroy_orbiter (
-	rocket_t& rocket, 
+	orbiter_t& orbiter, 
 	const explosion_direction_t explosion_direction
 )
 {
-	rocket.set_render(false);
-	rocket.set_destroyed(true);
+	orbiter.set_render(false);
+	orbiter.set_destroyed(true);
 
 	const char *explosion_texture_path;
 	hitbox_t explosion_hitbox(30.0f, 56.1f);
-	point_t explosion_position = rocket.get_tlcorner();
+	point_t explosion_position = orbiter.get_tlcorner();
 
 	switch (explosion_direction) {
 		case explosion_direction_t::left:
@@ -25,8 +25,8 @@ void destroy_orbiter (
 			explosion_texture_path = "./textures/explosion.bmp";
 			explosion_hitbox = hitbox_t(56.1f, 30.0f);
 			explosion_position = point_t(
-				rocket.get_position().x - (rocket.get_hitbox().w / 2),
-				rocket.get_blcorner().y - explosion_hitbox.h
+				orbiter.get_position().x - (orbiter.get_hitbox().w / 2),
+				orbiter.get_blcorner().y - explosion_hitbox.h
 			);
 			break;
 		default:
@@ -46,7 +46,7 @@ void destroy_orbiter (
 	play_sound("./audios/explosion-se.wav");
 }
 
-void rocket_t::handle_object_collision (const object_t& object)
+void orbiter_t::handle_object_collision (const object_t& object)
 {
 	if (typeid(object) == typeid(mountain_t) && !this->destroyed) {
 		this->collided = true;
@@ -55,7 +55,7 @@ void rocket_t::handle_object_collision (const object_t& object)
 	}
 }
 
-void rocket_t::handle_wside_collision (const window_side_t& wside)
+void orbiter_t::handle_wside_collision (const window_side_t& wside)
 {
 	if (!this->collided)
 		switch (wside) {
@@ -72,7 +72,7 @@ void rocket_t::handle_wside_collision (const window_side_t& wside)
 		}
 }
 
-void rocket_t::handle_event (SDL_Event& e, float time)
+void orbiter_t::handle_event (SDL_Event& e, float time)
 {
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
@@ -83,7 +83,7 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 	}
 }
 
-void rocket_t::physics (float gravity, float time)
+void orbiter_t::physics (float gravity, float time)
 {
 	if (this->collided)
 		return;
@@ -101,13 +101,13 @@ mountain_t::mountain_t (const hitbox_t& hitbox)
 
 void mountain_t::handle_object_collision(const object_t& object)
 {
-	if (typeid(object) == typeid(rocket_t))
+	if (typeid(object) == typeid(orbiter_t))
 		this->set_color(color_t("#f00"));
 }
 
 objects_allocator_type objects(20);
 
-rocket_t player(
+orbiter_t player(
 	hitbox_t(30, 56.1),
 	point_t(100, 50),
 	color_t("#9649e3"),
