@@ -2,21 +2,42 @@
 
 using namespace engine;
 
-void destroy_orbiter (rocket_t& rocket)
+void destroy_orbiter (
+	rocket_t& rocket, 
+	const explosion_direction_t explosion_direction
+)
 {
 	rocket.set_render(false);
 	rocket.set_destroyed(true);
 
-	hitbox_t explosion_hitbox = hitbox_t(60.0f, 40.0f);
-	point_t explosion_position(
-		rocket.get_position().x - (rocket.get_hitbox().w / 2),
-		rocket.get_blcorner().y - explosion_hitbox.h
-	);
+	const char *explosion_texture_path;
+	hitbox_t explosion_hitbox(30.0f, 56.1f);
+	point_t explosion_position = rocket.get_tlcorner();
+
+	switch (explosion_direction) {
+		case explosion_direction_t::left:
+			explosion_texture_path = "./textures/explosion-left.bmp";
+			break;
+		case explosion_direction_t::right:
+			explosion_texture_path = "./textures/explosion-right.bmp";
+			break;
+		case explosion_direction_t::bottom:
+			explosion_texture_path = "./textures/explosion.bmp";
+			explosion_hitbox = hitbox_t(56.1f, 30.0f);
+			explosion_position = point_t(
+				rocket.get_position().x - (rocket.get_hitbox().w / 2),
+				rocket.get_blcorner().y - explosion_hitbox.h
+			);
+			break;
+		default:
+			break;
+	}
+
 	object_t* explosion = new object_t(
 		explosion_hitbox,
 		explosion_position,
 		color_t("#9649e3"),
-		"./textures/explosion.bmp"
+		explosion_texture_path
 	);
 
 	objects.emplace_back(explosion);
@@ -25,13 +46,30 @@ void destroy_orbiter (rocket_t& rocket)
 	play_sound("./audios/explosion-se.wav");
 }
 
-void rocket_t::handle_collision (object_t& object)
+void rocket_t::handle_object_collision (const object_t& object)
 {
 	if (typeid(object) == typeid(mountain_t) && !this->destroyed) {
-		this->collided_to_mountain = true;
-		if (this->velocity.y > 30.0f)
-			destroy_orbiter(*this);
+		this->collided = true;
+		if (this->velocity.y > 30.0f && !this->destroyed)
+			destroy_orbiter(*this, explosion_direction_t::bottom);
 	}
+}
+
+void rocket_t::handle_wside_collision (const window_side_t& wside)
+{
+	if (!this->collided)
+		switch (wside) {
+			case window_side_t::left:
+				this->collided = true;
+				destroy_orbiter(*this, explosion_direction_t::left);
+				break;
+			case window_side_t::right:
+				this->collided = true;
+				destroy_orbiter(*this, explosion_direction_t::right);
+				break;
+			default:
+				break;
+		}
 }
 
 void rocket_t::handle_event (SDL_Event& e, float time)
@@ -47,7 +85,7 @@ void rocket_t::handle_event (SDL_Event& e, float time)
 
 void rocket_t::physics (float gravity, float time)
 {
-	if (this->collided_to_mountain)
+	if (this->collided)
 		return;
 
 	uniform_rectilinear_motion(*this, gravity*3, motion_direction_t::right);
@@ -61,7 +99,7 @@ mountain_t::mountain_t (const hitbox_t& hitbox)
 	this->set_hitbox(hitbox);
 }
 
-void mountain_t::handle_collision(object_t& object)
+void mountain_t::handle_object_collision(const object_t& object)
 {
 	if (typeid(object) == typeid(rocket_t))
 		this->set_color(color_t("#f00"));
@@ -101,7 +139,7 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 
 int main(int argc, char **argv)
 {
-	float gravity = 50.0f;
+	float gravity = 20.0f;
 	player.set_show_hitbox(false);
 
 	objects.push(&player);

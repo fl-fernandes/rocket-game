@@ -16,11 +16,18 @@ using namespace engine;
 
 extern objects_allocator_type objects;
 
+enum class explosion_direction_t
+{
+	left,
+	right,
+	bottom,
+};
+
 class rocket_t : public object_t 
 {
 	private:
-		bool collided_to_mountain = false;
-		
+		bool collided = false;
+
 	OO_ENCAPSULATE_DV(bool, destroyed, false);
 
 	public:
@@ -40,7 +47,8 @@ class rocket_t : public object_t
 	public:
 		void handle_event (SDL_Event& e, float time);
 		void physics (float gravity, float time);
-		void handle_collision (object_t& object) override;
+		void handle_object_collision (const object_t& object) override;
+		void handle_wside_collision (const window_side_t& wside) override;
 };
 
 class mountain_t : public object_t 
@@ -50,7 +58,7 @@ class mountain_t : public object_t
 		mountain_t (const hitbox_t& hitbox);
 
 	public:
-		void handle_collision (object_t &object) override;
+		void handle_object_collision (const object_t &object) override;
 };
 
 #endif
