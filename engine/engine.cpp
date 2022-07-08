@@ -13,6 +13,7 @@ namespace engine
 	static bool running = false;
 	static bool paused = false;
 	static SDL_Texture *background_texture;
+	static Mix_Music *music_theme;
 
     SDL_Renderer* get_renderer ()
     {
@@ -60,15 +61,31 @@ namespace engine
 		return false;
 	};
 
-	bool play_sound (const char* sound_path)
+	bool load_music_theme (const char *path)
 	{
-		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
-		// Mix_Music *music = Mix_LoadMUS(sound_path);
-		Mix_Chunk *sound = Mix_LoadWAV(sound_path);
+		Mix_Music *music = Mix_LoadMUS(path);
+
+		if (music == nullptr)
+			return false;
+
+		if (music_theme != nullptr)
+			Mix_FreeMusic(music_theme);
+
+		music_theme = music;
+		Mix_PlayMusic(music_theme, -1);
+		return true;
+	}
+
+	bool play_sound (const char *path)
+	{
+		Mix_Chunk *sound = Mix_LoadWAV(path);
+		
 		if (sound == nullptr)
 			return false;
 
 		Mix_PlayChannel(-1, sound, 0);
+		// Mix_FreeChunk(sound);
+
 		return true;
 	}
 
@@ -175,6 +192,8 @@ namespace engine
 			return;
 		}
 
+		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+
 		window = SDL_CreateWindow(
 			game_name,
 			SDL_WINDOWPOS_CENTERED,
@@ -211,6 +230,7 @@ namespace engine
 	{
 		SDL_DestroyRenderer(renderer);
 		SDL_DestroyWindow(window);
+		Mix_FreeMusic(music_theme);
 		window = nullptr;
 		renderer = nullptr;
 		elapsed = .0f;
