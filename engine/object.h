@@ -15,7 +15,15 @@ namespace engine
 {
     using coord_t = float;	
 	using spectre_t = uint32_t;
-	
+
+	enum class window_side_t
+	{
+		left,
+		top,
+		right,
+		bottom,
+	};
+
 	struct hitbox_t
 	{ 
 		coord_t w;
@@ -134,7 +142,8 @@ namespace engine
 			}
 
 		public:
-            virtual void handle_collision (object_t& object) {};
+            virtual void handle_object_collision (const object_t& object) {};
+            virtual void handle_wside_collision (const window_side_t& wside) {};
             bool load_texture (SDL_Renderer *renderer);
 	};
 }

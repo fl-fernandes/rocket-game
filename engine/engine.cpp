@@ -123,7 +123,7 @@ namespace engine
 		}
 	}
 
-	inline static bool check_collision (object_t& obj1, object_t& obj2)
+	inline static bool check_object_collision (object_t& obj1, object_t& obj2)
 	{
 		bool xAxis = (((obj1.get_tlcorner().x <= obj2.get_tlcorner().x) &&
 						obj1.get_trcorner().x >= obj2.get_tlcorner().x) ||
@@ -150,10 +150,19 @@ namespace engine
 				if (&obj_i == &obj_j)
 					continue;
 
-				if (check_collision(obj_i, obj_j)) {
-					obj_i.handle_collision(obj_j);
-					obj_j.handle_collision(obj_i);
+				if (check_object_collision(obj_i, obj_j)) {
+					obj_i.handle_object_collision(obj_j);
+					obj_j.handle_object_collision(obj_i);
 				}
+
+				if (obj_i.get_tlcorner().x <= 0)
+					obj_i.handle_wside_collision(window_side_t::left);
+				else if (obj_i.get_trcorner().y <= 0)
+					obj_i.handle_wside_collision(window_side_t::top);
+				else if (obj_i.get_trcorner().x >= screen_width)
+					obj_i.handle_wside_collision(window_side_t::right);
+				else if (obj_i.get_blcorner().y >= screen_height)
+					obj_i.handle_wside_collision(window_side_t::bottom);
 			}
 		}
 	}
