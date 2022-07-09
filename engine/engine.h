@@ -13,6 +13,7 @@
 
 #include "physics.h"
 #include "object.h"
+#include "audio.h"
 
 namespace engine
 {	
@@ -28,11 +29,9 @@ namespace engine
     float get_elapsed ();
 
 	bool load_background (const char *path);
-	bool load_music_theme (const char *path);
 	void pause ();
 	void unpause ();
 	bool is_paused ();
-	bool play_sound (const char *path);
 }
 
 #endif
