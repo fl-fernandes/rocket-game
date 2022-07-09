@@ -98,24 +98,4 @@ namespace engine
         if (this->is_playable())
             Mix_FreeMusic(this->music);
     }
-
-    void music_t::set_volume (int volume)
-    {
-        Mix_VolumeMusic(volume);
-    }
-
-    void music_t::pause ()
-    {
-        Mix_PauseMusic();
-    }
-
-    void music_t::resume ()
-    {
-        Mix_ResumeMusic();
-    }
-
-    void music_t::rewind ()
-    {
-        Mix_RewindMusic();
-    }
 }

@@ -68,10 +68,22 @@ namespace engine
             void destroy ();
 
         public:
-            static void set_volume (int volume);
-            static void pause ();
-            static void resume ();
-            static void rewind ();
+            static void set_volume (int volume)
+            {
+                Mix_VolumeMusic(volume);
+            }
+            static void pause ()
+            {
+                Mix_PauseMusic();
+            }
+            static void resume ()
+            {
+                Mix_ResumeMusic();
+            }
+            static void rewind ()
+            {
+                Mix_RewindMusic();
+            }
     };
 }
 
