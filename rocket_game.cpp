@@ -2,6 +2,9 @@
 
 using namespace engine;
 
+sound_t explosion_sound("./audios/explosion-se.wav");
+music_t main_music_theme("./audios/main-theme-mu.wav");
+
 void destroy_orbiter (
 	orbiter_t& orbiter, 
 	const explosion_direction_t explosion_direction
@@ -42,8 +45,7 @@ void destroy_orbiter (
 
 	objects.emplace_back(explosion);
 	explosion->load_texture(get_renderer());
-	
-	play_sound("./audios/explosion-se.wav");
+	explosion_sound.play();
 }
 
 void orbiter_t::handle_object_collision (const object_t& object)
@@ -140,6 +142,7 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 int main(int argc, char **argv)
 {
 	float gravity = 20.0f;
+
 	player.set_show_hitbox(false);
 
 	objects.push(&player);
@@ -153,7 +156,7 @@ int main(int argc, char **argv)
     );
     
     load_background("./textures/sky1.bmp");
-	load_music_theme("./audios/main-theme-mu.wav");
+	main_music_theme.play();
 
 	handle_event = [&] (SDL_Event& e, float time) {
     	player.handle_event(e, time);
