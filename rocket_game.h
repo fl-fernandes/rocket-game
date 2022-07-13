@@ -5,40 +5,52 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "engine.h"
+#include "engine/engine.h"
 
 #define SCREEN_WIDTH (1366)
 #define SCREEN_HEIGHT (720)
 
 #define EARTH_GRAVITY (9.807f)
 
-using namespace game_t;
+using namespace engine;
 
 extern objects_allocator_type objects;
 
-class rocket_t : public object_t 
+enum class explosion_direction_t
+{
+	left,
+	right,
+	bottom,
+};
+
+class orbiter_t : public object_t 
 {
 	private:
-		bool collided_to_mountain = false;
+		bool collided = false;
+
+	OO_ENCAPSULATE_DV(bool, destroyed, false);
 
 	public:
-		rocket_t () : object_t() {}
-		rocket_t (
-			const hitbox_t& hitbox, 
-			const point_t& position, 
-			const color_t& color
-		) : object_t(hitbox, position, color) {}
-		rocket_t (
+		orbiter_t () : object_t() {}
+		orbiter_t (
 			const hitbox_t& hitbox, 
 			const point_t& position, 
 			const color_t& color,
+			float mass
+		) : object_t(hitbox, position, color, mass) {}
+		orbiter_t (
+			const hitbox_t& hitbox, 
+			const point_t& position, 
+			const color_t& color,
+			float mass,
 			const char *texture_path
-		) : object_t(hitbox, position, color, texture_path) {}
+		) : object_t(hitbox, position, color, mass, texture_path) {}
 
 	public:
 		void handle_event (SDL_Event& e, float time);
-		void physics (float gravity, float time);
-		void handle_collision (object_t& object) override;
+		void physics (float time);
+		void handle_object_collision (const object_t& object) override;
+		void handle_wside_collision (const window_side_t& wside) override;
 };
 
 class mountain_t : public object_t 
@@ -48,7 +60,7 @@ class mountain_t : public object_t
 		mountain_t (const hitbox_t& hitbox);
 
 	public:
-		void handle_collision (object_t &object) override;
+		void handle_object_collision (const object_t &object) override;
 };
 
 #endif
