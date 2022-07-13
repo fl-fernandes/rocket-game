@@ -59,6 +59,33 @@ namespace engine
 
 		return false;
 	};
+	
+	static void reset_resulting_forces ()
+	{
+		objects_allocator_type& objs = *objects;
+		for (uint32_t i = 0; i < objs.size(); i++) {
+			object_t& obj = *objs[i];
+			obj.set_resulting_force(vector_t());
+		}
+	}
+	
+	static void calc_obj_speed_position (object_t& object)
+	{
+		if (object.get_mass() == 0.0f)
+			return;
+		
+		float ax, ay;
+		
+		ax = object.get_resulting_force().x / object.get_mass();
+		ay = object.get_resulting_force().y / object.get_mass();
+		
+		// S = (S0 + V0t + At^2) / 2
+		object.get_position().x = object.get_position().x + object.get_velocity().x * elapsed + (ax * elapsed * elapsed) / 2.0f;
+		object.get_position().y = object.get_position().y + object.get_velocity().y * elapsed + (ay * elapsed * elapsed) / 2.0f;
+		
+		object.get_velocity().x = object.get_velocity().x + ax * elapsed;
+		object.get_velocity().y = object.get_velocity().y + ay * elapsed;
+	}
 
     static void render_objs ()
 	{
@@ -68,6 +95,8 @@ namespace engine
 
 		for (uint32_t i = 0; i < objs.size(); i++) {
 			object_t& obj = *objs[i];
+
+			calc_obj_speed_position(obj);
 
 			if (!obj.get_render())
 				continue;
@@ -230,6 +259,9 @@ namespace engine
 
 		while (running) {
 			tbegin = std::chrono::steady_clock::now();
+			
+			reset_resulting_forces();
+			
 			while (SDL_PollEvent(&e) != 0) {
 				if (e.type == SDL_QUIT) {
 					running = false;

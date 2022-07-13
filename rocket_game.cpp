@@ -2,6 +2,8 @@
 
 using namespace engine;
 
+float gravity = 20.0f;
+
 sound_t explosion_sound("./audios/explosion-se.wav");
 music_t main_music_theme("./audios/main-theme-mu.wav");
 
@@ -40,6 +42,7 @@ void destroy_orbiter (
 		explosion_hitbox,
 		explosion_position,
 		color_t("#9649e3"),
+		0.0f,
 		explosion_texture_path
 	);
 
@@ -79,19 +82,20 @@ void orbiter_t::handle_event (SDL_Event& e, float time)
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->velocity.y -= 1000 * time;
+				vector_t thrust = weight_force(gravity, this->get_mass());
+				thrust.y *= -2.0f;
+				this->add_to_resulting_force(thrust);
 				break;
 		}
 	}
 }
 
-void orbiter_t::physics (float gravity, float time)
+void orbiter_t::physics (float time)
 {
 	if (this->collided)
 		return;
-
-	uniform_rectilinear_motion(*this, gravity*3, motion_direction_t::right);
-	uniform_variable_rectilinear_motion(*this, gravity, motion_direction_t::down);
+	
+	this->add_to_resulting_force(weight_force(gravity, this->get_mass()));
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
@@ -99,6 +103,7 @@ mountain_t::mountain_t (const hitbox_t& hitbox)
 	this->set_position(point_t(0, SCREEN_HEIGHT - hitbox.h));
 	this->set_color(color_t("#c7a87e"));
 	this->set_hitbox(hitbox);
+	this->set_mass(150.0f);
 }
 
 void mountain_t::handle_object_collision(const object_t& object)
@@ -113,6 +118,7 @@ orbiter_t player(
 	hitbox_t(30, 56.1),
 	point_t(100, 50),
 	color_t("#9649e3"),
+	100.0f,
 	"./textures/orbiter.bmp"
 );
 
@@ -141,8 +147,6 @@ void generate_mountains (uint32_t max_width, uint32_t max_height)
 
 int main(int argc, char **argv)
 {
-	float gravity = 20.0f;
-
 	player.set_show_hitbox(false);
 
 	objects.push(&player);
@@ -163,7 +167,7 @@ int main(int argc, char **argv)
     };
 
    	run([&] (float elapsed) {
-		player.physics(gravity, elapsed);
+		player.physics(elapsed);
     });
 
     return 0;

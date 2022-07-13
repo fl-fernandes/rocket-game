@@ -15,6 +15,8 @@
 #include "object.h"
 #include "audio.h"
 
+#define EARTH_ACCLR (9.807f)
+
 namespace engine
 {	
 	using objects_allocator_type = yadsl::vector_t<engine::object_t*>;
