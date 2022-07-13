@@ -5,13 +5,15 @@ namespace engine
     object_t::object_t(
 		const hitbox_t& hitbox, 
 		const point_t& position, 
-		const color_t& color
+		const color_t& color,
+		float mass
 	)
 	{
 		this->position = position;
 		this->hitbox = hitbox;
 		this->color = color;
 		this->velocity = vector_t(0, 0);
+		this->mass = mass;
 		if (texture_path != "")
 			this->set_texture_path(texture_path);
 	}
@@ -19,8 +21,9 @@ namespace engine
 		const hitbox_t& hitbox, 
 		const point_t& position, 
 		const color_t& color, 
+		float mass,
 		const char *texture_path
-	) : object_t(hitbox, position, color)
+	) : object_t(hitbox, position, color, mass)
 	{
 		this->texture_path = texture_path;
 	}

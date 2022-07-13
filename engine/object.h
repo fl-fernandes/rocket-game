@@ -43,7 +43,10 @@ namespace engine
 		coord_t x;
 		coord_t y;
 		
-		vector_t () {}
+		vector_t () {
+			this->x = 0.0f;
+			this->y = 0.0f;
+		}
 		
 		vector_t (coord_t x, coord_t y)
 		{
@@ -95,10 +98,13 @@ namespace engine
 		GETTER_SETTER_REF(hitbox_t, hitbox);
 		GETTER_SETTER_REF(point_t, position);
 		GETTER_SETTER_REF(vector_t, velocity);
+		OO_ENCAPSULATE(float, mass);
+		OO_ENCAPSULATE_DV(vector_t, resulting_force, vector_t());
 		GETTER_SETTER_REF(color_t, color);
 		OO_ENCAPSULATE(std::string, texture_path);
 		OO_ENCAPSULATE_DV(bool, show_hitbox, true);
 		OO_ENCAPSULATE_DV(bool, render, true);
+		
 
 		public:
 			~object_t();
@@ -106,12 +112,14 @@ namespace engine
 			object_t(
 				const hitbox_t& hitbox, 
 				const point_t& position, 
-				const color_t& color
+				const color_t& color,
+				float mass
 			);
 			object_t(
 				const hitbox_t& hitbox, 
 				const point_t& position, 
 				const color_t& color, 
+				float mass,
 				const char *texture_path
 			);
 
@@ -139,6 +147,11 @@ namespace engine
 			inline point_t get_brcorner ()
 			{
 				return point_t(this->get_trcorner().x, this->get_blcorner().y);
+			}
+			inline void add_to_resulting_force (const vector_t& vector)
+			{
+				this->resulting_force.x += vector.x;
+				this->resulting_force.y += vector.y;
 			}
 
 		public:
