@@ -121,6 +121,7 @@ void mountain_t::handle_object_collision(const object_t& object)
 }
 
 objects_allocator_type objects(20);
+texts_allocator_type texts(20);
 
 orbiter_t player(
 	hitbox_t(30, 56.1),
@@ -130,15 +131,16 @@ orbiter_t player(
 	"./textures/orbiter.bmp"
 );
 
-mountain_t mountain(hitbox_t(SCREEN_WIDTH, 100));
-
 ui_text_t pixel(
-	hitbox_t(100, 100),
+	hitbox_t(100, 30),
 	point_t(120, 80),
-	color_t("#9649e3"),
-	"./textures/8bit-font.ttf",
-	"testando essa caralha"
+	color_t(255,255,255),
+	"./textures/font.ttf",
+	"Teste:",
+	12
 );
+
+mountain_t mountain(hitbox_t(SCREEN_WIDTH, 100));
 
 void generate_mountains (uint32_t max_width, uint32_t max_height)
 {
@@ -166,14 +168,15 @@ int main(int argc, char **argv)
 	player.set_show_hitbox(false);
 
 	objects.push(&player);
-	//objects.push(&pixel);
+	texts.push(&pixel);
 	generate_mountains(150, 100);
 
 	init(
 		"Father Junior ThunderMouth, The Truly And Only",
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
-		&objects
+		&objects,
+		&texts
     );
     
     load_background("./textures/sky1.bmp");
