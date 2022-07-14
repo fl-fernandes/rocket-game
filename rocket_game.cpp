@@ -82,20 +82,28 @@ void orbiter_t::handle_event (SDL_Event& e, float time)
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				vector_t thrust = weight_force(gravity, this->get_mass());
-				thrust.y *= -2.0f;
-				this->add_to_resulting_force(thrust);
+				this->activate_thruster(10.0f);
 				break;
 		}
 	}
 }
 
+void orbiter_t::activate_thruster (float force)
+{
+	vector_t thrust = weight_force(gravity, this->get_mass());
+	thrust.y *= -force;
+	this->add_to_resulting_force(thrust);
+}
+
 void orbiter_t::physics (float time)
 {
-	if (this->collided)
+	if (this->collided) {
+		this->set_velocity(vector_t(0.0f, 0.0f));
 		return;
-	
+	}
+
 	this->add_to_resulting_force(weight_force(gravity, this->get_mass()));
+	//this->add_to_resulting_force(vector_t(1000.0f, 0.0f));
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
@@ -103,7 +111,7 @@ mountain_t::mountain_t (const hitbox_t& hitbox)
 	this->set_position(point_t(0, SCREEN_HEIGHT - hitbox.h));
 	this->set_color(color_t("#c7a87e"));
 	this->set_hitbox(hitbox);
-	this->set_mass(150.0f);
+	this->set_mass(24.310f);
 }
 
 void mountain_t::handle_object_collision(const object_t& object)
@@ -123,6 +131,14 @@ orbiter_t player(
 );
 
 mountain_t mountain(hitbox_t(SCREEN_WIDTH, 100));
+
+ui_text_t pixel(
+	hitbox_t(100, 100),
+	point_t(120, 80),
+	color_t("#9649e3"),
+	"./textures/8bit-font.ttf",
+	"testando essa caralha"
+);
 
 void generate_mountains (uint32_t max_width, uint32_t max_height)
 {
@@ -150,6 +166,7 @@ int main(int argc, char **argv)
 	player.set_show_hitbox(false);
 
 	objects.push(&player);
+	//objects.push(&pixel);
 	generate_mountains(150, 100);
 
 	init(

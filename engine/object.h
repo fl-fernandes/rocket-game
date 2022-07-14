@@ -2,6 +2,7 @@
 #define __ENGINE_OBJECT__
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <string>
 #include <cstring>
 #include "lib.h"
@@ -84,42 +85,36 @@ namespace engine
 		}
 	};
 
-    class object_t
-	{	
-		private:
-			SDL_Texture *texture = nullptr;
-
+	class base_object_t 
+	{
 		protected:
+			SDL_Texture *texture = nullptr;
 			hitbox_t hitbox;
 			point_t position;
-			vector_t velocity;
 			color_t color;
+			std::string texture_path;
+			bool show_hitbox = true;
+			bool render = true;
 
 		GETTER_SETTER_REF(hitbox_t, hitbox);
 		GETTER_SETTER_REF(point_t, position);
-		GETTER_SETTER_REF(vector_t, velocity);
-		OO_ENCAPSULATE(float, mass);
-		OO_ENCAPSULATE_DV(vector_t, resulting_force, vector_t());
 		GETTER_SETTER_REF(color_t, color);
-		OO_ENCAPSULATE(std::string, texture_path);
-		OO_ENCAPSULATE_DV(bool, show_hitbox, true);
-		OO_ENCAPSULATE_DV(bool, render, true);
+		GETTER_SETTER_REF(std::string, texture_path);
+		GETTER_SETTER(bool, show_hitbox);
+		GETTER_SETTER(bool, render);
 		
-
 		public:
-			~object_t();
-			object_t() {}
-			object_t(
+			~base_object_t();
+			base_object_t() {};
+			base_object_t(
 				const hitbox_t& hitbox, 
 				const point_t& position, 
-				const color_t& color,
-				float mass
+				const color_t& color
 			);
-			object_t(
+			base_object_t(
 				const hitbox_t& hitbox, 
 				const point_t& position, 
 				const color_t& color, 
-				float mass,
 				const char *texture_path
 			);
 
@@ -148,6 +143,38 @@ namespace engine
 			{
 				return point_t(this->get_trcorner().x, this->get_blcorner().y);
 			}
+
+		public:
+            virtual bool load_texture (SDL_Renderer *renderer);
+	};
+
+    class object_t : public base_object_t
+	{
+		protected:
+			vector_t velocity;
+			vector_t resulting_force = vector_t(0.0f, 0.0f);
+
+		GETTER_SETTER_REF(vector_t, velocity);
+		GETTER_SETTER_REF(vector_t, resulting_force);
+		OO_ENCAPSULATE(float, mass);
+
+		public:
+			object_t() {};
+			object_t(
+				const hitbox_t& hitbox, 
+				const point_t& position, 
+				const color_t& color,
+				float mass
+			);
+			object_t(
+				const hitbox_t& hitbox, 
+				const point_t& position, 
+				const color_t& color, 
+				float mass,
+				const char *texture_path
+			);
+
+		public:
 			inline void add_to_resulting_force (const vector_t& vector)
 			{
 				this->resulting_force.x += vector.x;
@@ -155,9 +182,27 @@ namespace engine
 			}
 
 		public:
-            virtual void handle_object_collision (const object_t& object) {};
+			virtual void handle_object_collision (const object_t& object) {};
             virtual void handle_wside_collision (const window_side_t& wside) {};
-            bool load_texture (SDL_Renderer *renderer);
+            bool load_texture (SDL_Renderer *renderer) override;
+	};
+
+	class ui_text_t : public base_object_t
+	{
+        OO_ENCAPSULATE(std::string, message);
+
+		public:
+			ui_text_t() {};
+			ui_text_t(
+				const hitbox_t& hitbox, 
+				const point_t& position, 
+				const color_t& color, 
+				const char *texture_path,
+				const char *message
+			);
+
+		public:
+            bool load_texture (SDL_Renderer *renderer) override;
 	};
 }
 

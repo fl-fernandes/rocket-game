@@ -7,7 +7,7 @@ namespace engine
 	static uint32_t screen_height;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
-	static yadsl::vector_t<object_t*> *objects;
+	static objects_allocator_type *objects;
 	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
