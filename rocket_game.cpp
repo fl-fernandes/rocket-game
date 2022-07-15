@@ -82,7 +82,7 @@ void orbiter_t::handle_event (SDL_Event& e, float time)
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->activate_thruster(10.0f);
+				this->activate_thruster(2.0f);
 				break;
 		}
 	}
@@ -103,7 +103,7 @@ void orbiter_t::physics (float time)
 	}
 
 	this->add_to_resulting_force(weight_force(gravity, this->get_mass()));
-	//this->add_to_resulting_force(vector_t(1000.0f, 0.0f));
+	this->add_to_resulting_force(wind_drag_force(vector_t(500.0f, -200.0f), this->get_velocity()));
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
@@ -127,7 +127,7 @@ orbiter_t player(
 	hitbox_t(30, 56.1),
 	point_t(100, 50),
 	color_t("#9649e3"),
-	100.0f,
+	24310.0f,
 	"./textures/orbiter.bmp"
 );
 
