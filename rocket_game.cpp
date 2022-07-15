@@ -80,9 +80,16 @@ void orbiter_t::handle_wside_collision (const window_side_t& wside)
 void orbiter_t::handle_event (SDL_Event& e, float time)
 {
 	if (e.type == SDL_KEYDOWN) {
+
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->activate_thruster(10.0f);
+				this->activate_thruster(3.0f);
+				break;
+			case SDLK_RIGHT:
+				this->activate_breaker(vector_t(2000, 0));
+				break;
+			case SDLK_LEFT:
+				this->activate_breaker(vector_t(-2000, 0));
 				break;
 		}
 	}
@@ -95,6 +102,11 @@ void orbiter_t::activate_thruster (float force)
 	this->add_to_resulting_force(thrust);
 }
 
+void orbiter_t::activate_breaker (const vector_t& break_force)
+{
+	this->add_to_resulting_force(break_force);
+}
+
 void orbiter_t::physics (float time)
 {
 	if (this->collided) {
@@ -103,7 +115,7 @@ void orbiter_t::physics (float time)
 	}
 
 	this->add_to_resulting_force(weight_force(gravity, this->get_mass()));
-	//this->add_to_resulting_force(vector_t(1000.0f, 0.0f));
+	this->add_to_resulting_force(vector_t(1000.0f, 0.0f));
 }
 
 mountain_t::mountain_t (const hitbox_t& hitbox)
