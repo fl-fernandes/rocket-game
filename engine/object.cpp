@@ -128,4 +128,11 @@ namespace engine
 
 		return false;
 	}
+	
+	void ui_text_t::set_message (const char *message, SDL_Renderer *renderer)
+	{	
+		this->message = message;
+		
+		this->load_texture(renderer);
+	}
 }

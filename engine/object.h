@@ -189,7 +189,7 @@ namespace engine
 
 	class ui_text_t : public base_object_t
 	{
-        OO_ENCAPSULATE(std::string, message);
+		OO_ENCAPSULATE_RO(std::string, message);
         OO_ENCAPSULATE(unsigned int, font_size);
 
 		public:
@@ -202,6 +202,9 @@ namespace engine
 				const char *message,
 				unsigned int font_size
 			);
+
+		public:
+			void set_message (const char *message, SDL_Renderer *renderer);
 
 		public:
             bool load_texture (SDL_Renderer *renderer) override;
