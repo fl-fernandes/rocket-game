@@ -190,6 +190,7 @@ namespace engine
 	class ui_text_t : public base_object_t
 	{
         OO_ENCAPSULATE(std::string, message);
+        OO_ENCAPSULATE(unsigned int, font_size);
 
 		public:
 			ui_text_t() {};
@@ -198,7 +199,8 @@ namespace engine
 				const point_t& position, 
 				const color_t& color, 
 				const char *texture_path,
-				const char *message
+				const char *message,
+				unsigned int font_size
 			);
 
 		public:

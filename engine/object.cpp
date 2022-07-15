@@ -85,22 +85,30 @@ namespace engine
 		const point_t& position, 
 		const color_t& color, 
 		const char *texture_path,
-		const char *message
+		const char *message,
+		unsigned int font_size
 	) : base_object_t(hitbox, position, color, texture_path)
 	{
 		this->message = message;
+		this->font_size = font_size;
 	}
 
 	bool ui_text_t::load_texture (SDL_Renderer *renderer)
 	{
 		 if (this->texture_path != "" && renderer != nullptr) {
-            TTF_Font *font = TTF_OpenFont(this->texture_path.c_str(), 24);
-
+			if (TTF_Init() < 0)	{
+				DPRINT("Couldn't initialize SDL TTF");
+			}
+			
+            TTF_Font *font = TTF_OpenFont(this->texture_path.c_str(), this->font_size);
+				
             if (!font) {
                 return false;
             }
-
-            SDL_Surface *surface = TTF_RenderText_Solid(font, this->message.c_str(), {255,255,255});
+            
+            SDL_Color color = {this->color.r, this->color.g, this->color.b};
+            
+            SDL_Surface *surface = TTF_RenderText_Solid(font, this->message.c_str(), color);
 
             if (surface == nullptr)
                 return false;
@@ -114,6 +122,7 @@ namespace engine
                 SDL_DestroyTexture(this->texture);
             SDL_FreeSurface(surface);
             this->texture = texture;
+			TTF_Quit();
             return true;
         }
 
