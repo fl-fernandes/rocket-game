@@ -7,7 +7,8 @@ namespace engine
 	static uint32_t screen_height;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
-	static yadsl::vector_t<object_t*> *objects;
+	static objects_allocator_type *objects;
+	static texts_allocator_type *ui_texts;
 	static float elapsed = .0f;
 	static bool initialized = false;
 	static bool running = false;
@@ -122,6 +123,40 @@ namespace engine
 				SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
 		}
 	}
+	
+	static void render_texts ()
+	{
+		SDL_Rect rect;
+
+		texts_allocator_type& texts = *ui_texts;
+
+		for (uint32_t i = 0; i < texts.size(); i++) {
+			ui_text_t& obj = *texts[i];
+
+			if (!obj.get_render())
+				continue;
+
+			rect.x = obj.get_position().x;
+			rect.y = obj.get_position().y;
+			rect.w = obj.get_hitbox().w;
+			rect.h = obj.get_hitbox().h;
+
+
+			if (obj.get_show_hitbox())
+				SDL_SetRenderDrawColor(
+					renderer, 
+					obj.get_color().r, 
+					obj.get_color().g, 
+					obj.get_color().b, 
+					obj.get_color().a
+				);
+			
+			SDL_RenderDrawRect(renderer, &rect);
+			
+			if (obj.get_texture() != nullptr)
+				SDL_RenderCopy(renderer, obj.get_texture(), nullptr, &rect);
+		}
+	}
 
 	inline static bool check_object_collision (object_t& obj1, object_t& obj2)
 	{
@@ -183,7 +218,8 @@ namespace engine
 		const char *game_name, 
 		uint32_t screen_width, 
 		uint32_t screen_height, 
-		objects_allocator_type *objs
+		objects_allocator_type *objs,
+		texts_allocator_type *texts
 	)
 	{
 		engine::screen_width = screen_width;
@@ -227,11 +263,15 @@ namespace engine
 		}
 
 		objects = objs;
+		ui_texts = texts;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 
 		for (uint32_t i = 0; i < objects->size(); i++)
 			objects->at(i)->load_texture(renderer);
 
+		for (uint32_t i = 0; i < ui_texts->size(); i++)
+			ui_texts->at(i)->load_texture(renderer);
+			
 		initialized = true;
 	}
 
@@ -292,6 +332,7 @@ namespace engine
 				else
 					SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 				
+				render_texts();
 				render_objs();
 				
 				SDL_RenderPresent(renderer);

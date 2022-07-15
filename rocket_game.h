@@ -49,6 +49,7 @@ class orbiter_t : public object_t
 	public:
 		void handle_event (SDL_Event& e, float time);
 		void physics (float time);
+		void activate_thruster (float force);
 		void handle_object_collision (const object_t& object) override;
 		void handle_wside_collision (const window_side_t& wside) override;
 };
