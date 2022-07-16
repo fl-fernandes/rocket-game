@@ -80,9 +80,16 @@ void orbiter_t::handle_wside_collision (const window_side_t& wside)
 void orbiter_t::handle_event (SDL_Event& e, float time)
 {
 	if (e.type == SDL_KEYDOWN) {
+
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->activate_thruster(2.0f);
+				this->activate_thruster(3.0f);
+				break;
+			case SDLK_RIGHT:
+				this->activate_side_thruster(vector_t(2000, 0));
+				break;
+			case SDLK_LEFT:
+				this->activate_side_thruster(vector_t(-2000, 0));
 				break;
 		}
 	}
@@ -93,6 +100,11 @@ void orbiter_t::activate_thruster (float force)
 	vector_t thrust = weight_force(gravity, this->get_mass());
 	thrust.y *= -force;
 	this->add_to_resulting_force(thrust);
+}
+
+void orbiter_t::activate_side_thruster (const vector_t& thrust_force)
+{
+	this->add_to_resulting_force(thrust_force);
 }
 
 void orbiter_t::physics (float time)
