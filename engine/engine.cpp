@@ -9,7 +9,9 @@ namespace engine
 	static SDL_Renderer *renderer;
 	static objects_allocator_type *objects;
 	static texts_allocator_type *ui_texts;
-	static float elapsed = .0f;
+	static float elapsed = 0.0f;
+	static float fps = 0.0f;
+	static bool _show_hitboxes = true;
 	static bool initialized = false;
 	static bool running = false;
 	static bool paused = false;
@@ -24,6 +26,11 @@ namespace engine
     {
         return elapsed;
     }
+
+	float get_fps ()
+	{
+		return fps;
+	}
 
     void pause () 
 	{
@@ -107,16 +114,14 @@ namespace engine
 			rect.w = obj.get_hitbox().w;
 			rect.h = obj.get_hitbox().h;
 
+			SDL_SetRenderDrawColor(
+				renderer,
+				obj.get_color().r,
+				obj.get_color().g,
+				obj.get_color().b,
+				obj.get_show_hitbox() && _show_hitboxes ? obj.get_color().a : SDL_ALPHA_TRANSPARENT
+			);
 
-			if (obj.get_show_hitbox())
-				SDL_SetRenderDrawColor(
-					renderer, 
-					obj.get_color().r, 
-					obj.get_color().g, 
-					obj.get_color().b, 
-					obj.get_color().a
-				);
-			
 			SDL_RenderDrawRect(renderer, &rect);
 			
 			if (obj.get_texture() != nullptr)
@@ -141,16 +146,14 @@ namespace engine
 			rect.w = obj.get_hitbox().w;
 			rect.h = obj.get_hitbox().h;
 
+			SDL_SetRenderDrawColor(
+				renderer, 
+				obj.get_color().r, 
+				obj.get_color().g, 
+				obj.get_color().b, 
+				obj.get_show_hitbox() && _show_hitboxes ? obj.get_color().a : SDL_ALPHA_TRANSPARENT
+			);
 
-			if (obj.get_show_hitbox())
-				SDL_SetRenderDrawColor(
-					renderer, 
-					obj.get_color().r, 
-					obj.get_color().g, 
-					obj.get_color().b, 
-					obj.get_color().a
-				);
-			
 			SDL_RenderDrawRect(renderer, &rect);
 			
 			if (obj.get_texture() != nullptr)
@@ -219,11 +222,14 @@ namespace engine
 		uint32_t screen_width, 
 		uint32_t screen_height, 
 		objects_allocator_type *objs,
-		texts_allocator_type *texts
+		texts_allocator_type *texts,
+		bool show_hitboxes
 	)
 	{
 		engine::screen_width = screen_width;
 		engine::screen_height = screen_height;
+
+		_show_hitboxes = show_hitboxes;
 		
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
 			DPRINT("SDL cout not be initialize! SDL_Error: ");
@@ -262,6 +268,8 @@ namespace engine
 			return;
 		}
 
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
 		objects = objs;
 		ui_texts = texts;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -292,14 +300,21 @@ namespace engine
 			exit(1);
 		}
 
+		timer_t* timer = timer_t::instance();
 		SDL_Event e;
 		running = true;
-		
-		std::chrono::steady_clock::time_point tbegin, tend;
+		float frame_rate = 60.0f;
 
 		while (running) {
-			tbegin = std::chrono::steady_clock::now();
+			timer->tick();
+
+			if (timer->get_delta_time() < (1/frame_rate))
+				continue;
 			
+			timer->reset();
+			elapsed = timer->get_delta_time();
+			fps = 1 / timer->get_delta_time();
+
 			reset_resulting_forces();
 			
 			while (SDL_PollEvent(&e) != 0) {
@@ -337,12 +352,6 @@ namespace engine
 				
 				SDL_RenderPresent(renderer);
 			}
-
-			do {
-				tend = std::chrono::steady_clock::now();
-				std::chrono::duration<float> elapsed_ = std::chrono::duration_cast<std::chrono::duration<float>>(tend - tbegin);
-				elapsed = elapsed_.count();
-			} while (elapsed < 0.001f);
 		}
 		
 		close();

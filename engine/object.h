@@ -9,8 +9,6 @@
 
 #define RGB_MAX_VALUE (255)
 #define RGB_MIN_VALUE (0)
-#define ALPHA_MAX_VALUE (1.0f)
-#define ALPHA_MIN_VALUE (0.0f)
 
 namespace engine
 {
@@ -101,7 +99,7 @@ namespace engine
 		
 		color_t () {}
 		
-		color_t (spectre_t red, spectre_t green, spectre_t blue, spectre_t alpha = ALPHA_MAX_VALUE)
+		color_t (spectre_t red, spectre_t green, spectre_t blue, spectre_t alpha = SDL_ALPHA_OPAQUE)
 		{
 			this->r = red;
 			this->g = green;
@@ -110,7 +108,7 @@ namespace engine
 			std::snprintf(this->hex, sizeof this->hex, "#%02x%02x%02x", red, green, blue);
 		}
 
-		color_t (const char *hex, spectre_t alpha = ALPHA_MAX_VALUE)
+		color_t (const char *hex, spectre_t alpha = SDL_ALPHA_OPAQUE)
 		{
 			strcpy(this->hex, hex);
 			std::sscanf(hex, "#%02x%02x%02x", &this->r, &this->g, &this->b);
