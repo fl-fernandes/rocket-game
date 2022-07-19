@@ -43,6 +43,7 @@ namespace engine
 	{
 		coord_t x;
 		coord_t y;
+		coord_t z = 0;
 		
 		vector_t () {
 			this->x = 0.0f;
@@ -54,6 +55,38 @@ namespace engine
 			this->x = x;
 			this->y = y;
 		}
+		
+		inline void add (const vector_t& v)
+		{
+			this->x += v.x;
+			this->y += v.y;
+			this->z += v.z;
+		}
+		
+		inline void subtract (const vector_t& v)
+		{
+			this->x -= v.x;
+			this->y -= v.y;
+			this->z -= v.z;
+		}
+		
+		inline void multiply (coord_t n)
+		{
+			this->x *= n;
+			this->y *= n;
+			this->z *= n;
+		}
+		
+		inline void divide (coord_t n)
+		{
+			this->x /= n;
+			this->y /= n;
+			this->z /= n;
+		}
+		
+		static coord_t prod_int (const vector_t& v1, const vector_t& v2);
+		coord_t get_module ();
+		void set_module (coord_t mod);
 	};
 
 	using point_t = vector_t;

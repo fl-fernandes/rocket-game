@@ -10,6 +10,7 @@ namespace engine
 	{
 		return vector_t(0.0f, gravity_acclr * mass);
 	}
+	vector_t wind_drag_force (const vector_t& wind_vel, vector_t& object_vel, float Cd = 1.05f);
 }
 
 #endif

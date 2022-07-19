@@ -2,6 +2,26 @@
 
 namespace engine
 {
+	coord_t vector_t::prod_int (const vector_t& v1, const vector_t& v2)
+	{
+		coord_t p;
+		p = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+		return p;
+	}
+
+	coord_t vector_t::get_module ()
+	{
+		coord_t m;
+		m = sqrt(vector_t::prod_int(*this, *this));	
+		return m;
+	}
+	
+	void vector_t::set_module (coord_t mod)
+	{
+		this->divide(this->get_module());
+		this->multiply(mod);
+	}
+
     base_object_t::base_object_t(
 		const hitbox_t& hitbox, 
 		const point_t& position, 
