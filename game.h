@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <cstdio>
+#include <cassert>
 #include "engine/engine.h"
 
 #define SCREEN_WIDTH (1366)

@@ -74,15 +74,25 @@ ui_text_t orbiter_speed_info(
 
 void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 {
-	std::string gravity_message = "Gravity: " + std::to_string(gravity) + " m/s^2";
-	std::string wind_force_message = "Wind force: " + std::to_string(wind_force.x) + "N" + " | " + std::to_string(wind_force.y) + "N";
-	std::string orbiter_mass_message = "Orbiter mass: " + std::to_string(player.get_mass()) + " Kg";
-	std::string orbiter_speed_message = "Orbiter speed: " + std::to_string(player.get_velocity().x) + " Km/h" + " | " + std::to_string(player.get_velocity().y) + " Km/h";
-
-	gravity_info.set_message(gravity_message.c_str(), get_renderer());
-	wind_force_info.set_message(wind_force_message.c_str(), get_renderer());
-	orbiter_mass_info.set_message(orbiter_mass_message.c_str(), get_renderer());
-	orbiter_speed_info.set_message(orbiter_speed_message.c_str(), get_renderer());
+	char buffer[255];
+	bool r;
+	
+	sprintf(buffer, "Gravity: %.2f m/s^2", gravity);
+	r = gravity_info.set_message(buffer, get_renderer());
+	assert(r);
+	
+	sprintf(buffer, "Wind force: %.2f N | %.2f N", wind_force.x, wind_force.y);
+	r = wind_force_info.set_message(buffer, get_renderer());
+	assert(r);
+	
+	sprintf(buffer, "Orbiter mass: %.2f Kg", player.get_mass());
+	r = orbiter_mass_info.set_message(buffer, get_renderer());
+	assert(r);
+	
+	sprintf(buffer, "Orbiter speed: %.2f Km/h | %.2f Km/h", player.get_velocity().x, player.get_velocity().y);
+	r = orbiter_speed_info.set_message(buffer, get_renderer());
+	
+	assert(r);
 }
 
 int main(int argc, char **argv)
@@ -106,7 +116,7 @@ int main(int argc, char **argv)
 		SCREEN_HEIGHT,
 		&objects,
 		&texts,
-		false
+		true
     );
     
     load_background("./textures/bg.bmp");

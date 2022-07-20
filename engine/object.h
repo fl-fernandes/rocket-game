@@ -235,7 +235,7 @@ namespace engine
 			);
 
 		public:
-			void set_message (const char *message, SDL_Renderer *renderer);
+			bool set_message (const char *message, SDL_Renderer *renderer);
 
 		public:
             bool load_texture (SDL_Renderer *renderer) override;

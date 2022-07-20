@@ -28,6 +28,15 @@
 	#define DPRINTLN(STR)
 #endif
 
+#define C_ASSERT(V) C_ASSERT_PRINTF(V, "bye!\n")
+
+#define C_ASSERT_PRINTF(V, ...) \
+{ if (bunlikely(!(V))) { \
+	cprintf("sanity error!\nfile %s at line %u assertion failed!\n%s\n", __FILE__, __LINE__, #V); \
+	cprintf(__VA_ARGS__); \
+	exit(1); \
+} }
+
 #define GETTER(TYPE, VAR) \
 	public: \
 		inline TYPE get_##VAR () \

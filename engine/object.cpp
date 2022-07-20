@@ -142,17 +142,17 @@ namespace engine
                 SDL_DestroyTexture(this->texture);
             SDL_FreeSurface(surface);
             this->texture = texture;
-			TTF_Quit();
+			//TTF_Quit();
             return true;
         }
 
 		return false;
 	}
 	
-	void ui_text_t::set_message (const char *message, SDL_Renderer *renderer)
+	bool ui_text_t::set_message (const char *message, SDL_Renderer *renderer)
 	{	
 		this->message = message;
 		
-		this->load_texture(renderer);
+		return this->load_texture(renderer);
 	}
 }
