@@ -3,7 +3,11 @@
 
 using namespace engine;
 
+//calcular a densidade e fazer as alterações em relação ao peso e massa
+
 float gravity = 20.0f;
+float total_fuel = 5000.0f;
+
 vector_t wind_force(500.0f, -200.0f);
 
 music_t main_music_theme("./audios/main-theme-mu.wav");
@@ -16,6 +20,7 @@ orbiter_t player(
 	point_t(100, 50),
 	color_t("#9649e3"),
 	24310.0f,
+	total_fuel,
 	"./textures/orbiter.bmp"
 );
 
@@ -72,6 +77,16 @@ ui_text_t orbiter_speed_info(
 	8
 );
 
+ui_text_t orbiter_fuel_info(
+	hitbox_t(250, 20),
+	point_t(10, 140),
+	color_t("#e80078"),
+	"./textures/font.ttf",
+	"",
+	8
+);
+
+
 void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 {
 	char buffer[255];
@@ -92,6 +107,9 @@ void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 	sprintf(buffer, "Orbiter speed: %.2f Km/h | %.2f Km/h", player.get_velocity().x, player.get_velocity().y);
 	r = orbiter_speed_info.set_message(buffer, get_renderer());
 	
+	sprintf(buffer, "Remaining fuel: %.2f", (player.get_fuel()/total_fuel) * 100);
+	r = orbiter_fuel_info.set_message(buffer, get_renderer());
+	
 	assert(r);
 }
 
@@ -102,6 +120,7 @@ int main(int argc, char **argv)
 	texts.push(&wind_force_info);
 	texts.push(&orbiter_mass_info);
 	texts.push(&orbiter_speed_info);
+	texts.push(&orbiter_fuel_info);
 
 	objects.push(&player);
 	objects.push(&thruster);

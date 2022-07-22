@@ -46,6 +46,30 @@ static void destroy_orbiter (
 	explosion_sound.play();
 }
 
+orbiter_t::orbiter_t(
+		const hitbox_t& hitbox, 
+		const point_t& position, 
+		const color_t& color,
+		float mass, 
+		float fuel
+	) : object_t(hitbox, position, color, mass)
+	{
+		this->fuel = fuel;
+		
+	}
+
+orbiter_t::orbiter_t(
+		const hitbox_t& hitbox, 
+		const point_t& position, 
+		const color_t& color, 
+		float mass,
+		float fuel,
+		const char *texture_path
+	) : object_t(hitbox, position, color, mass, texture_path)
+	{
+		this->fuel = fuel;
+	}
+
 void orbiter_t::handle_object_collision (const object_t& object)
 {
 	if (typeid(object) == typeid(mountain_t) && !this->destroyed) {
@@ -81,9 +105,13 @@ void orbiter_t::handle_event (SDL_Event& e, float gravity, float time)
 	if (e.type == SDL_KEYDOWN) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
-				this->activate_thruster(gravity, 3.0f);
-				if (this->thurster_obj != nullptr)
-					this->thurster_obj->set_render(true);
+				if (this->get_fuel() > 0) {
+					this->set_fuel(this->get_fuel()-25);
+					this->set_mass(this->get_mass() - 25);
+					this->activate_thruster(gravity, 3.0f);
+					if (this->thurster_obj != nullptr)
+						this->thurster_obj->set_render(true);
+				}
 				break;
 			case SDLK_RIGHT:
 				this->activate_side_thruster(vector_t(2000, 0));

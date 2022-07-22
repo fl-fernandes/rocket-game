@@ -14,22 +14,25 @@ class orbiter_t : public object_t
 		object_t *thurster_obj = nullptr; 
 
 	OO_ENCAPSULATE_DV(bool, destroyed, false);
+	OO_ENCAPSULATE(float, fuel);
 
 	public:
-		orbiter_t () : object_t() {}
-		orbiter_t (
-			const hitbox_t& hitbox, 
-			const point_t& position, 
-			const color_t& color,
-			float mass
-		) : object_t(hitbox, position, color, mass) {}
+		orbiter_t () {};
 		orbiter_t (
 			const hitbox_t& hitbox, 
 			const point_t& position, 
 			const color_t& color,
 			float mass,
-			const char *texture_path
-		) : object_t(hitbox, position, color, mass, texture_path) {}
+			float fuel
+		);
+		orbiter_t (
+			const hitbox_t& hitbox, 
+			const point_t& position, 
+			const color_t& color,
+			float mass,
+			float fuel,
+			const char *texture_path		
+		);
 
 	public:
 		void handle_event (SDL_Event& e, float gravity, float time);
