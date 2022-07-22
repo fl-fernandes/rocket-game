@@ -51,9 +51,9 @@ namespace engine
 			SDL_DestroyTexture(this->texture);
 	}
 
-	bool base_object_t::load_texture(SDL_Renderer *renderer)
+	int base_object_t::load_texture(SDL_Renderer *renderer)
 	{
-		return false;
+		return 1;
 	}
 
 	object_t::object_t(
@@ -79,25 +79,25 @@ namespace engine
 		this->mass = mass;
 	}
 
-	bool object_t::load_texture (SDL_Renderer *renderer)
+	int object_t::load_texture (SDL_Renderer *renderer)
 	{
 		if (this->texture_path != "" && renderer != nullptr) {
 			SDL_Surface *surface = SDL_LoadBMP(this->texture_path.c_str());
 			if (surface == nullptr)
-				return false;
+				return 1;
 
             SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
             if (texture == nullptr)
-				return false;
+				return 2;
 			
 			if (this->texture != nullptr)
 				SDL_DestroyTexture(this->texture);
 			SDL_FreeSurface(surface);
 			this->texture = texture;
-			return true;
+			return 0;
 		}
 
-		return false;
+		return 3;
 	}
 
 	ui_text_t::ui_text_t(
@@ -111,45 +111,51 @@ namespace engine
 	{
 		this->message = message;
 		this->font_size = font_size;
+		
+		this->font = nullptr;
 	}
 
-	bool ui_text_t::load_texture (SDL_Renderer *renderer)
+	int ui_text_t::load_texture (SDL_Renderer *renderer)
 	{
 		 if (this->texture_path != "" && renderer != nullptr) {
 			if (TTF_Init() < 0)	{
 				DPRINT("Couldn't initialize SDL TTF");
 			}
 			
-            TTF_Font *font = TTF_OpenFont(this->texture_path.c_str(), this->font_size);
+			if (this->font == nullptr) {
+				this->font = TTF_OpenFont(this->texture_path.c_str(), this->font_size);
 				
-            if (!font) {
-                return false;
-            }
-            
+				if (!this->font) {
+				    C_ASSERT(0);
+				}
+			}
+			
             SDL_Color color = {this->color.r, this->color.g, this->color.b};
             
-            SDL_Surface *surface = TTF_RenderText_Solid(font, this->message.c_str(), color);
+            //SDL_Color white = {255,255,255};
+            
+            SDL_Surface *surface = TTF_RenderText_Solid(this->font, this->message.c_str(), color);
 
             if (surface == nullptr)
-                return false;
+                return 2;
 
             SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
             if (texture == nullptr)
-                return false;
+                return 3;
 
             if (this->texture != nullptr)
                 SDL_DestroyTexture(this->texture);
             SDL_FreeSurface(surface);
             this->texture = texture;
 			//TTF_Quit();
-            return true;
+            return 0;
         }
 
-		return false;
+		return 4;
 	}
 	
-	bool ui_text_t::set_message (const char *message, SDL_Renderer *renderer)
+	int ui_text_t::set_message (const char *message, SDL_Renderer *renderer)
 	{	
 		this->message = message;
 		
