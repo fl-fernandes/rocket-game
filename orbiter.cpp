@@ -107,7 +107,11 @@ void orbiter_t::handle_event (SDL_Event& e, float gravity, float time)
 			case SDLK_UP:
 				if (this->get_fuel() > 0) {
 					this->set_fuel(this->get_fuel()-25);
-					this->set_mass(this->get_mass() - 25);
+					
+					//the density of the fuel is 1.8
+					//so, the mass is given by mass = volume * density
+					this->set_mass(this->get_mass() - (25 * 1.8));
+					
 					this->activate_thruster(gravity, 3.0f);
 					if (this->thurster_obj != nullptr)
 						this->thurster_obj->set_render(true);

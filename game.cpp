@@ -3,10 +3,10 @@
 
 using namespace engine;
 
-//calcular a densidade e fazer as alterações em relação ao peso e massa
-
 float gravity = 20.0f;
-float total_fuel = 5000.0f;
+
+//amount of fuel in liters
+float total_fuel = 5000.0f; 
 
 vector_t wind_force(500.0f, -200.0f);
 
@@ -86,6 +86,15 @@ ui_text_t orbiter_fuel_info(
 	8
 );
 
+ui_text_t low_orbiter_fuel(
+	hitbox_t(250, 20),
+	point_t(10, 140),
+	color_t("#ff0000"),
+	"./textures/font.ttf",
+	"",
+	8
+);
+
 
 void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 {
@@ -108,7 +117,12 @@ void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 	r = orbiter_speed_info.set_message(buffer, get_renderer());
 	
 	sprintf(buffer, "Remaining fuel: %.2f", (player.get_fuel()/total_fuel) * 100);
-	r = orbiter_fuel_info.set_message(buffer, get_renderer());
+	if ((player.get_fuel()/total_fuel) * 100 < 10){
+		r = low_orbiter_fuel.set_message(buffer, get_renderer());
+	} else {
+		r = orbiter_fuel_info.set_message(buffer, get_renderer());
+	}
+	
 	
 	assert(r);
 }
@@ -121,6 +135,7 @@ int main(int argc, char **argv)
 	texts.push(&orbiter_mass_info);
 	texts.push(&orbiter_speed_info);
 	texts.push(&orbiter_fuel_info);
+	texts.push(&low_orbiter_fuel);
 
 	objects.push(&player);
 	objects.push(&thruster);
