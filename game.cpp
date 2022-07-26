@@ -103,28 +103,26 @@ void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 	
 	sprintf(buffer, "Gravity: %.2f m/s^2", gravity);
 	r = gravity_info.set_message(buffer, get_renderer());
-	assert(r);
+	C_ASSERT_PRINTF(r == 0, "código de erro: %i\n", r);
 	
 	sprintf(buffer, "Wind force: %.2f N | %.2f N", wind_force.x, wind_force.y);
 	r = wind_force_info.set_message(buffer, get_renderer());
-	assert(r);
+	C_ASSERT_PRINTF(r == 0, "código de erro: %i\n", r);
 	
 	sprintf(buffer, "Orbiter mass: %.2f Kg", player.get_mass());
 	r = orbiter_mass_info.set_message(buffer, get_renderer());
-	assert(r);
+	C_ASSERT_PRINTF(r == 0, "código de erro: %i\n", r);
 	
 	sprintf(buffer, "Orbiter speed: %.2f Km/h | %.2f Km/h", player.get_velocity().x, player.get_velocity().y);
 	r = orbiter_speed_info.set_message(buffer, get_renderer());
-	
+
 	sprintf(buffer, "Remaining fuel: %.2f", (player.get_fuel()/total_fuel) * 100);
-	if ((player.get_fuel()/total_fuel) * 100 < 10){
+	if ((player.get_fuel()/total_fuel) * 100 < 10)
 		r = low_orbiter_fuel.set_message(buffer, get_renderer());
-	} else {
+	else
 		r = orbiter_fuel_info.set_message(buffer, get_renderer());
-	}
 	
-	
-	assert(r);
+	C_ASSERT_PRINTF(r == 0, "código de erro: %i\n", r);
 }
 
 int main(int argc, char **argv)

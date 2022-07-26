@@ -176,7 +176,7 @@ namespace engine
 			}
 
 		public:
-            virtual bool load_texture (SDL_Renderer *renderer);
+            virtual int load_texture (SDL_Renderer *renderer);
 	};
 
     class object_t : public base_object_t
@@ -215,12 +215,13 @@ namespace engine
 		public:
 			virtual void handle_object_collision (const object_t& object) {};
             virtual void handle_wside_collision (const window_side_t& wside) {};
-            bool load_texture (SDL_Renderer *renderer) override;
+            int load_texture (SDL_Renderer *renderer) override;
 	};
 
 	class ui_text_t : public base_object_t
 	{
 		OO_ENCAPSULATE_RO(std::string, message);
+		OO_ENCAPSULATE(TTF_Font*, font);
         OO_ENCAPSULATE(unsigned int, font_size);
 
 		public:
@@ -235,10 +236,10 @@ namespace engine
 			);
 
 		public:
-			bool set_message (const char *message, SDL_Renderer *renderer);
+			int set_message (const char *message, SDL_Renderer *renderer);
 
 		public:
-            bool load_texture (SDL_Renderer *renderer) override;
+            int load_texture (SDL_Renderer *renderer) override;
 	};
 }
 

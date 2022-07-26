@@ -118,10 +118,10 @@ void orbiter_t::handle_event (SDL_Event& e, float gravity, float time)
 				}
 				break;
 			case SDLK_RIGHT:
-				this->activate_side_thruster(vector_t(2000, 0));
+				this->activate_side_thruster(vector_t(500000, 0));
 				break;
 			case SDLK_LEFT:
-				this->activate_side_thruster(vector_t(-2000, 0));
+				this->activate_side_thruster(vector_t(-500000, 0));
 				break;
 		}
 	}
