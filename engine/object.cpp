@@ -132,8 +132,6 @@ namespace engine
 			
             SDL_Color color = {this->color.r, this->color.g, this->color.b};
             
-            //SDL_Color white = {255,255,255};
-            
             SDL_Surface *surface = TTF_RenderText_Solid(this->font, this->message.c_str(), color);
 
             if (surface == nullptr)
@@ -148,7 +146,7 @@ namespace engine
                 SDL_DestroyTexture(this->texture);
             SDL_FreeSurface(surface);
             this->texture = texture;
-			//TTF_Quit();
+			
             return 0;
         }
 

@@ -291,6 +291,8 @@ namespace engine
 		renderer = nullptr;
 		elapsed = .0f;
 		SDL_Quit();
+		TTF_Quit();
+		timer_t::release();
 	}
 
 	void run (std::function<void(float)> game_loop)
