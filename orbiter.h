@@ -15,6 +15,7 @@ class orbiter_t : public object_t
 
 	OO_ENCAPSULATE_DV(bool, destroyed, false);
 	OO_ENCAPSULATE(float, fuel);
+	OO_ENCAPSULATE(float, zero_fuel_weight);
 
 	public:
 		orbiter_t () {};
@@ -47,6 +48,9 @@ class orbiter_t : public object_t
 		{
 			this->thurster_obj = obj;
 		}
+		
+	private:
+		void consumpt_fuel ();
 };
 
 #endif

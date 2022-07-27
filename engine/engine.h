@@ -32,6 +32,7 @@ namespace engine
     SDL_Renderer* get_renderer ();
     float get_elapsed ();
 	float get_fps ();
+	const uint8_t* get_keyboard_state_array ();
 
 	bool load_background (const char *path);
 	void pause ();

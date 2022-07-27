@@ -87,7 +87,7 @@ ui_text_t orbiter_fuel_info(
 );
 
 ui_text_t low_orbiter_fuel(
-	hitbox_t(250, 20),
+	hitbox_t(260, 20),
 	point_t(10, 140),
 	color_t("#ff0000"),
 	"./textures/font.ttf",
@@ -116,7 +116,7 @@ void hud (float gravity, vector_t& wind_force, orbiter_t& player)
 	sprintf(buffer, "Orbiter speed: %.2f Km/h | %.2f Km/h", player.get_velocity().x, player.get_velocity().y);
 	r = orbiter_speed_info.set_message(buffer, get_renderer());
 
-	sprintf(buffer, "Remaining fuel: %.2f", (player.get_fuel()/total_fuel) * 100);
+	sprintf(buffer, "Remaining fuel: %.2f %%", (player.get_fuel()/total_fuel) * 100);
 	if ((player.get_fuel()/total_fuel) * 100 < 10)
 		r = low_orbiter_fuel.set_message(buffer, get_renderer());
 	else

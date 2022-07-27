@@ -16,6 +16,7 @@ namespace engine
 	static bool running = false;
 	static bool paused = false;
 	static SDL_Texture *background_texture;
+	static const uint8_t *keyboard_state_array; 
 
     SDL_Renderer* get_renderer ()
     {
@@ -30,6 +31,11 @@ namespace engine
 	float get_fps ()
 	{
 		return fps;
+	}
+	
+	const uint8_t* get_keyboard_state_array ()
+	{
+		return keyboard_state_array;
 	}
 
     void pause () 
@@ -231,7 +237,7 @@ namespace engine
 
 		_show_hitboxes = show_hitboxes;
 		
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+		if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 			DPRINT("SDL cout not be initialize! SDL_Error: ");
 			DPRINTLN(SDL_GetError());
 			return;
@@ -242,6 +248,8 @@ namespace engine
 			DPRINTLN(Mix_GetError());
 			return;
 		}
+		
+		keyboard_state_array = SDL_GetKeyboardState(nullptr);
 
 		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 
